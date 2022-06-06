@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  streaks-runner:
+    # If you want to build from Dockerfile
+    build: .
+    # If you want to use image
+    # image: "registry.chevro.fr/streaks/runner:latest"
+    container_name: "streaks-runner"
+    restart: always
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - ./config.yml:/runner/config.yml

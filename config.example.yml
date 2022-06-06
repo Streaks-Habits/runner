@@ -1,0 +1,15 @@
+instance: "https://streaks.chevro.fr"
+api_key: ""
+cron: "50 * * * *"
+services:
+  duolingo:
+    enable: false
+    calendar: ""
+    username: ""
+    password: ""
+  intra42:
+    enable: false
+    calendar: ""
+    username: ""
+    password: ""
+
