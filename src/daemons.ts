@@ -30,7 +30,7 @@ function checkConfig(serviceName: string, service: Object, originalService: Obje
 }
 
 function getExecPromise(conf: Config, servConf: any, serviceName: string, command: string): Promise<void> {
-	var logPath: string = path.resolve("daemons.log")
+	var logPath: string = path.resolve("log", "daemons.log")
 
 	return new Promise((resolve, reject) => {
 		exec(command, (error, stdout, stderr) => {

@@ -11,3 +11,4 @@ services:
       - TZ=Europe/Paris
     volumes:
       - ./config.yml:/runner/config.yml
+      - ./log:/runner/log
