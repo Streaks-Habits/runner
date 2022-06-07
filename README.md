@@ -97,7 +97,7 @@ This is your Streaks API key, these are generated from the Streaks application a
 
 ### **cron**
 The cron syntax is used to know when the runner should go and make requests to the third party service to know if you have done your habit. The default cron is "50 * * * *", which means every hour, at minute 50.
-You can view your cron on the website [https://crontab.guru](https://crontab.guru/#50_*_*_*_*)
+You can view your cron on the website <a href="https://crontab.guru/#50_*_*_*_*" target="_blank">https://crontab.guru</a>
 
 ### **services**
 The services section includes the configuration of each third party service you will use. The syntax will look like :
