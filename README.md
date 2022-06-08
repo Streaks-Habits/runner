@@ -23,6 +23,16 @@ wget https://git.chevro.fr/streaks/runner/-/raw/main/docker-compose.yml
 wget https://git.chevro.fr/streaks/runner/-/raw/main/config.example.yml -O config.yml
 ```
 
+Edit the `docker-compose.yml` to suit your needs, especially the **TZ** (for timezone) environment variable.
+
+```yml
+environment:
+  - TZ=Europe/Paris
+```
+
+You can find [a list of timezone here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), choose the one you use.
+
+
 **Go to the [Configuration](#configuration) section to edit your `config.yml` file, then come back here.**
 
 Start your container with:
@@ -82,7 +92,7 @@ Configuration
 The minimal `config.yml` file should look like this:
 ```yml
 instance: "https://streaks.chevro.fr"
-api_key: "you_api_key"
+api_key: "your_api_key"
 cron: "50 * * * *"
 services:
   <The services configuration (detailed below)>
