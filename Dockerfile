@@ -13,7 +13,7 @@ RUN npm run build
 FROM node:alpine as main
 
 # Install daemons dependencies
-RUN apk add --no-cache python3 py3-pip
+RUN apk add --no-cache python3 py3-pip tzdata
 # Copy sources and builded sources
 WORKDIR /runner
 COPY package.json package.json
