@@ -12,4 +12,6 @@ services:
     calendar: ""
     username: ""
     password: ""
-
+  strava:
+    athete_id: 00000000
+  
