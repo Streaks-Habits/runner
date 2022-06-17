@@ -8,9 +8,6 @@ def log(t):
 	print("[ERROR] ", t)
 	exit(1)
 
-if datetime.datetime.now().hour != 23:
-	exit(0)
-
 if len(sys.argv) != 2:
 	log("Not enough OR too much arguments, waits only the athlete_id in JSON format")
 parameters = json.loads(sys.argv[1])
