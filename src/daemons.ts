@@ -67,7 +67,7 @@ function getExecPromise(conf: Config, servConf: any, serviceName: string, comman
 					return res.text()
 				}).then(res => {
 					if (res != "OK")
-						console.log(`API request: ${chalk.red(res)}`)
+						console.log(`API request: ${chalk.red(res)} for ${chalk.cyan(serviceName)}`)
 					resolve()
 				})
 			}
@@ -123,7 +123,10 @@ export function runDaemons(): Promise<void> {
 			if (!checkConfig(capitalize(name), service, emptyService))
 				return
 
-			console.log(`Starting ${chalk.cyan(capitalize(name))}...`)
+			if (!service.enable)
+				return
+
+			console.log(`Starting ${chalk.cyan(capitalize(name))}…`)
 			const cli = getCli(name).replace("<DATA>", JSON.stringify(service))
 			execPromises.push(getExecPromise(conf, service, name, cli))
 		})

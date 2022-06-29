@@ -17,6 +17,12 @@ export interface Config {
 			calendar: string,
 			username: string,
 			password: string
+		},
+		gitlab: {
+			enable: boolean,
+			calendar: string,
+			instance: string,
+			username: string
 		}
 	}
 }
@@ -40,6 +46,12 @@ export const emptyConf: Config = {
 			calendar: "",
 			username: "",
 			password: ""
+		},
+		gitlab: {
+			enable: false,
+			calendar: "",
+			instance: "",
+			username: ""
 		}
 	}
 }
