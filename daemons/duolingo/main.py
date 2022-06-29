@@ -34,5 +34,3 @@ user_info_resp = json.loads(user_info_req.text)
 # Check that streak as expended today
 if user_info_resp['streak_extended_today']:
 	print("success")
-else:
-	print("still not a success")
