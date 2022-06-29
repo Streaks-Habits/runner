@@ -6,6 +6,8 @@ export function getCli(serviceName: string): string {
 			return `/usr/bin/python3 ./daemons/intra42/main.py '<DATA>'`
 		case 'duolingo':
 			return `/usr/bin/python3 ./daemons/duolingo/main.py '<DATA>'`
+		case 'gitlab':
+			return `/usr/bin/python3 ./daemons/gitlab/main.py '<DATA>'`
 		default:
 			return ``
 	}

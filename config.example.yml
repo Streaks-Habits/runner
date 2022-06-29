@@ -13,5 +13,12 @@ services:
     username: ""
     password: ""
   strava:
-    athete_id: 00000000
-  
+    enable: false
+    calendar: ""
+    athlete_id: ""
+  gitlab:
+    enable: false
+    calendar: ""
+    instance: ""
+    username: ""
+
