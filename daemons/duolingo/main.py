@@ -2,12 +2,14 @@ import requests
 import json
 import sys
 
-if len(sys.argv) != 3:
-	print("Usage: python main.py <login> <password>")
+if len(sys.argv) != 2:
+	print('Usage: python main.py \'{"username": "<username>", "password": "<password>"}\'')
 	quit()
 
-login=sys.argv[1]
-password=sys.argv[2]
+settings = json.loads(sys.argv[1])
+if not 'username' in settings or not 'password' in settings:
+	print('Usage: python main.py \'{"username": "<username>", "password": "<password>"}\'')
+	quit()
 
 # Use a requests session to store cookies
 req = requests.Session()
@@ -15,8 +17,8 @@ req = requests.Session()
 # Login
 login_url = 'https://www.duolingo.com/login'
 login_req = req.post(login_url, json={
-	'login': login,
-	'password': password
+	'login': settings['username'],
+	'password': settings['password']
 })
 login_resp = json.loads(login_req.text)
 
@@ -26,11 +28,9 @@ if 'user_id' not in login_resp:
 	quit()
 
 # Retrieve user info
-user_info_req = req.get("https://www.duolingo.com/api/1/users/show?username=" + login)
+user_info_req = req.get("https://www.duolingo.com/api/1/users/show?username=" + settings['username'])
 user_info_resp = json.loads(user_info_req.text)
 
 # Check that streak as expended today
 if user_info_resp['streak_extended_today']:
 	print("success")
-else:
-	print("still not a success")
