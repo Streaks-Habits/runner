@@ -12,17 +12,23 @@ export interface Config {
 			username: string,
 			password: string
 		},
+		gitlab: {
+			enable: boolean,
+			calendar: string,
+			instance: string,
+			username: string
+		},
 		intra42: {
 			enable: boolean,
 			calendar: string,
 			username: string,
 			password: string
 		},
-		gitlab: {
+		strava: {
 			enable: boolean,
 			calendar: string,
-			instance: string,
-			username: string
+			athlete_id: string,
+			activities: Array<string>
 		}
 	}
 }
@@ -41,17 +47,23 @@ export const emptyConf: Config = {
 			username: "",
 			password: ""
 		},
+		gitlab: {
+			enable: false,
+			calendar: "",
+			instance: "",
+			username: ""
+		},
 		intra42: {
 			enable: false,
 			calendar: "",
 			username: "",
 			password: ""
 		},
-		gitlab: {
+		strava: {
 			enable: false,
 			calendar: "",
-			instance: "",
-			username: ""
+			athlete_id: "",
+			activities: []
 		}
 	}
 }

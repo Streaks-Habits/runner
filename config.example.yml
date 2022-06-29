@@ -7,6 +7,11 @@ services:
     calendar: ""
     username: ""
     password: ""
+  gitlab:
+    enable: false
+    calendar: ""
+    instance: ""
+    username: ""
   intra42:
     enable: false
     calendar: ""
@@ -16,9 +21,4 @@ services:
     enable: false
     calendar: ""
     athlete_id: ""
-  gitlab:
-    enable: false
-    calendar: ""
-    instance: ""
-    username: ""
-
+    activities: []
