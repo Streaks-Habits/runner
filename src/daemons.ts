@@ -22,8 +22,15 @@ function checkConfig(serviceName: string, service: Object, emptyService: Object)
 	})
 
 	serviceKeys.forEach((key) => {
+		const elem = service[key as keyof typeof service]
+		const emptyElem = emptyService[key as keyof typeof emptyService]
+
 		if (!emptyServiceKeys.includes(key)) {
 			console.log(chalk.red(`${chalk.bold(serviceName)}: ${key} property isn't supported.`))
+			hasProblem = true
+		}
+		else if (typeof elem != typeof emptyElem) {
+			console.log(chalk.red(`${chalk.bold(serviceName)}: ${key} has a wrong type.`))
 			hasProblem = true
 		}
 	})
