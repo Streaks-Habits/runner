@@ -6,13 +6,15 @@ import chalk from 'chalk'
 import moment from "moment"
 
 import { conf, emptyConf, Config } from './config'
+import { capitalize } from './utils'
+import { getCli } from './services'
 
-function checkConfig(serviceName: string, service: Object, originalService: Object): boolean {
+function checkConfig(serviceName: string, service: Object, emptyService: Object): boolean {
 	let serviceKeys = Object.keys(service)
-	let originalServiceKeys = Object.keys(originalService)
+	let emptyServiceKeys = Object.keys(emptyService)
 	let hasProblem = false
 
-	originalServiceKeys.forEach((key) => {
+	emptyServiceKeys.forEach((key) => {
 		if (!serviceKeys.includes(key)) {
 			console.log(chalk.red(`${chalk.bold(serviceName)}: ${key} missing.`))
 			hasProblem = true
@@ -20,7 +22,7 @@ function checkConfig(serviceName: string, service: Object, originalService: Obje
 	})
 
 	serviceKeys.forEach((key) => {
-		if (!originalServiceKeys.includes(key)) {
+		if (!emptyServiceKeys.includes(key)) {
 			console.log(chalk.red(`${chalk.bold(serviceName)}: ${key} property isn't supported.`))
 			hasProblem = true
 		}
@@ -30,47 +32,57 @@ function checkConfig(serviceName: string, service: Object, originalService: Obje
 }
 
 function getExecPromise(conf: Config, servConf: any, serviceName: string, command: string): Promise<void> {
-	var logPath: string = path.resolve("log", "daemons.log")
+	const logPath: string = path.resolve("log", "daemons.log")
+	const startDate: Date = new Date()
 
 	return new Promise((resolve, reject) => {
 		exec(command, (error, stdout, stderr) => {
-			var startDate: Date = new Date()
-			var commandReturn: string
+			var errorString: string = ''
 
+			// Get error string if there's error
 			if (error)
-				commandReturn = `error: ${error.message}`
+				errorString = `error: ${error.message}`
 			else if (stderr)
-				commandReturn = `command error: ${stderr}`
-			else
-				commandReturn = `${stdout}`
-			commandReturn = `${startDate.toISOString()} => ${serviceName} : ${commandReturn.trim()}${os.EOL}`
-			fs.appendFile(logPath, commandReturn, 'utf-8', (err) => {
-				if (err) console.log(chalk.red(err))
+				errorString = `command error: ${stderr}`
+			else if (stdout.trim() && stdout.trim() != "success")
+				errorString = `output: ${stdout}`
+			if (errorString != '')
+				errorString = `${startDate.toISOString()} => ${serviceName} : ${errorString.trim()}${os.EOL}`
 
-				if (stdout.trim() == "success") {
-					fetch(`${conf.instance}/api/set_state/${servConf.calendar}`, {
-						method: "post",
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							api_key: conf.api_key,
-							date: moment().format('YYYY-MM-DD'),
-							state: 'success'
-						})
+			if (errorString == '' && stdout.trim() == "success") {
+				// Call API if there's no errors and the program returns a success
+				fetch(`${conf.instance}/api/set_state/${servConf.calendar}`, {
+					method: "post",
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						api_key: conf.api_key,
+						date: moment().format('YYYY-MM-DD'),
+						state: 'success'
 					})
-					.then(res => {
-						return res.text()
-					}).then(res => {
-						if (res != "OK")
-							console.log(`API request: ${chalk.red(res)}`)
-						resolve()
-					})
-				}
-				else
+				})
+				.then(res => {
+					return res.text()
+				}).then(res => {
+					if (res != "OK")
+						console.log(`API request: ${chalk.red(res)}`)
 					resolve()
-			})
+				})
+			}
+			else if (errorString != '') {
+				// Log error message on error
+				fs.appendFile(logPath, errorString, 'utf-8', (err) => {
+					if (err) console.log(chalk.red(err))
+
+					resolve()
+				})
+			}
+			else {
+				// If a daemons has no error but return something else than an error
+				resolve()
+			}
 		})
 	})
 }
@@ -100,26 +112,20 @@ export function runDaemons(): Promise<void> {
 			return resolve()
 		}
 
-		Object.keys(conf.services).forEach(element => {
+		Object.keys(conf.services).forEach(name => {
 			// Check that the service exists in config
-			if (!Object.keys(emptyConf.services).includes(element))
-				return console.log(chalk.red(`${chalk.bold(element)} is not a supported service.`))
+			if (!Object.keys(emptyConf.services).includes(name))
+				return console.log(chalk.red(`${chalk.bold(name)} is not a supported service.`))
 
-			/**** DUOLINGO ****/
-			if (element == 'duolingo' && conf.services.duolingo.enable
-					&& checkConfig("Duolingo", conf.services.duolingo, emptyConf.services.duolingo)) {
-				console.log(`Starting 🦜 ${chalk.cyan("Duolingo")}...`)
-				execPromises.push(getExecPromise(conf, conf.services.duolingo, "duolingo",
-					`/usr/bin/python3 ./daemons/duolingo/main.py '${JSON.stringify(conf.services.duolingo)}'`))
-			}
+			const service = conf.services[name as keyof typeof conf.services]
+			const emptyService = emptyConf.services[name as keyof typeof emptyConf.services]
 
-			/**** INTRA 42 ****/
-			if (element == 'intra42' && conf.services.intra42.enable
-					&& checkConfig("Intra42", conf.services.intra42, emptyConf.services.intra42)) {
-				console.log(`Starting 🏫 ${chalk.cyan("Intra42")}...`)
-				execPromises.push(getExecPromise(conf, conf.services.intra42, "intra42",
-					`/usr/bin/python3 ./daemons/intra42/main.py '${JSON.stringify(conf.services.intra42)}'`))
-			}
+			if (!checkConfig(capitalize(name), service, emptyService))
+				return
+
+			console.log(`Starting ${chalk.cyan(capitalize(name))}...`)
+			const cli = getCli(name).replace("<DATA>", JSON.stringify(service))
+			execPromises.push(getExecPromise(conf, service, name, cli))
 		})
 
 		Promise.allSettled(execPromises).then(() => {
