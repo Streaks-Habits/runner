@@ -12,4 +12,9 @@ services:
     calendar: ""
     username: ""
     password: ""
+  gitlab:
+    enable: false
+    calendar: ""
+    instance: ""
+    username: ""
 

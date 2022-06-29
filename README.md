@@ -130,4 +130,5 @@ Supported services
 Here is a list of supported services, each service has its own README which contains its configuration instructions for the `config.yml` file.
 
 - [Duolingo](daemons/duolingo/)
+- [Gitlab](daemons/gitlab/)
 - [Intra 42](daemons/intra42/)
