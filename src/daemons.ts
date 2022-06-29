@@ -110,7 +110,7 @@ export function runDaemons(): Promise<void> {
 					&& checkConfig("Duolingo", conf.services.duolingo, emptyConf.services.duolingo)) {
 				console.log(`Starting 🦜 ${chalk.cyan("Duolingo")}...`)
 				execPromises.push(getExecPromise(conf, conf.services.duolingo, "duolingo",
-					`/usr/bin/python3 ./daemons/duolingo/main.py "${conf.services.duolingo.username}" "${conf.services.duolingo.password}"`))
+					`/usr/bin/python3 ./daemons/duolingo/main.py '${JSON.stringify(conf.services.duolingo)}'`))
 			}
 
 			/**** INTRA 42 ****/
@@ -118,7 +118,7 @@ export function runDaemons(): Promise<void> {
 					&& checkConfig("Intra42", conf.services.intra42, emptyConf.services.intra42)) {
 				console.log(`Starting 🏫 ${chalk.cyan("Intra42")}...`)
 				execPromises.push(getExecPromise(conf, conf.services.intra42, "intra42",
-					`/usr/bin/python3 ./daemons/intra42/main.py "${conf.services.intra42.username}" "${conf.services.intra42.password}"`))
+					`/usr/bin/python3 ./daemons/intra42/main.py '${JSON.stringify(conf.services.intra42)}'`))
 			}
 		})
 
