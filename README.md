@@ -132,3 +132,4 @@ Here is a list of supported services, each service has its own README which cont
 - [Duolingo](daemons/duolingo/)
 - [Gitlab](daemons/gitlab/)
 - [Intra 42](daemons/intra42/)
+- [Strava](daemons/strava/)
