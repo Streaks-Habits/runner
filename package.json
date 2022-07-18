@@ -9,7 +9,9 @@
 		"build": "npm run build:clear && tsc",
 		"build:clear": "rm -rf dist",
 		"test": "npm run test:lint",
-		"test:lint": "eslint src/"
+		"test:lint": "npm run test:lint:eslint && npm run test:lint:flake8",
+		"test:lint:eslint": "eslint src/",
+		"test:lint:flake8": "flake8 --use-flake8-tabs --ignore=E501 daemons/"
 	},
 	"author": "cestoliv",
 	"license": "MIT",

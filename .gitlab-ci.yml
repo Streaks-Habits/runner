@@ -9,7 +9,15 @@ eslint:
   retry: 2
   script:
     - npm install @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint
-    - npm run test:lint
+    - npm run test:lint:eslint
+
+flake8:
+  image: python:latest
+  stage: lint
+  retry: 2
+  script:
+    - pip install flake8 flake8-tabs
+    - npm run test:lint:flake8
 
 sast:
   stage: test
