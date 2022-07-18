@@ -1,7 +1,7 @@
 import { load } from 'js-yaml'
 import fs from 'fs'
 
-export interface Config {
+export interface IConfig {
 	instance: string,
 	api_key: string,
 	cron: string,
@@ -33,36 +33,41 @@ export interface Config {
 	}
 }
 
-const file = fs.readFileSync('./config.yml', 'utf8')
-export const conf: Config = load(file) as Config
+export type TServices = IConfig['services']['duolingo'] |
+						IConfig['services']['gitlab'] |
+						IConfig['services']['intra42'] |
+						IConfig['services']['strava']
 
-export const emptyConf: Config = {
-	instance: "",
-	api_key: "",
-	cron: "",
+const file = fs.readFileSync('./config.yml', 'utf8')
+export const conf: IConfig = load(file) as IConfig
+
+export const emptyConf: IConfig = {
+	instance: '',
+	api_key: '',
+	cron: '',
 	services: {
 		duolingo: {
 			enable: false,
-			calendar: "",
-			username: "",
-			password: ""
+			calendar: '',
+			username: '',
+			password: ''
 		},
 		gitlab: {
 			enable: false,
-			calendar: "",
-			instance: "",
-			username: ""
+			calendar: '',
+			instance: '',
+			username: ''
 		},
 		intra42: {
 			enable: false,
-			calendar: "",
-			username: "",
-			password: ""
+			calendar: '',
+			username: '',
+			password: ''
 		},
 		strava: {
 			enable: false,
-			calendar: "",
-			athlete_id: "",
+			calendar: '',
+			athlete_id: '',
 			activities: []
 		}
 	}

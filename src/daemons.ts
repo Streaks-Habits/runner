@@ -3,15 +3,15 @@ import path from 'path'
 import { exec } from 'child_process'
 import os from 'os'
 import chalk from 'chalk'
-import moment from "moment"
+import moment from 'moment'
 
-import { conf, emptyConf, Config } from './config'
+import { conf, emptyConf, IConfig, TServices } from './config'
 import { capitalize } from './utils'
 import { getCli } from './services'
 
-function checkConfig(serviceName: string, service: Object, emptyService: Object): boolean {
-	let serviceKeys = Object.keys(service)
-	let emptyServiceKeys = Object.keys(emptyService)
+function checkConfig(serviceName: string, service: TServices, emptyService: TServices): boolean {
+	const serviceKeys = Object.keys(service)
+	const emptyServiceKeys = Object.keys(emptyService)
 	let hasProblem = false
 
 	emptyServiceKeys.forEach((key) => {
@@ -38,28 +38,28 @@ function checkConfig(serviceName: string, service: Object, emptyService: Object)
 	return !hasProblem
 }
 
-function getExecPromise(conf: Config, servConf: any, serviceName: string, command: string): Promise<void> {
-	const logPath: string = path.resolve("log", "daemons.log")
+function getExecPromise(conf: IConfig, servConf: TServices, serviceName: string, command: string): Promise<void> {
+	const logPath: string = path.resolve('log', 'daemons.log')
 	const startDate: Date = new Date()
 
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		exec(command, (error, stdout, stderr) => {
-			var errorString: string = ''
+			let errorString = ''
 
 			// Get error string if there's error
 			if (error)
 				errorString = `error: ${error.message}`
 			else if (stderr)
 				errorString = `command error: ${stderr}`
-			else if (stdout.trim() && stdout.trim() != "success")
+			else if (stdout.trim() && stdout.trim() != 'success')
 				errorString = `output: ${stdout}`
 			if (errorString != '')
 				errorString = `${startDate.toISOString()} => ${serviceName} : ${errorString.trim()}${os.EOL}`
 
-			if (errorString == '' && stdout.trim() == "success") {
+			if (errorString == '' && stdout.trim() == 'success') {
 				// Call API if there's no errors and the program returns a success
 				fetch(`${conf.instance}/api/set_state/${servConf.calendar}`, {
-					method: "post",
+					method: 'post',
 					headers: {
 						'Accept': 'application/json',
 						'Content-Type': 'application/json'
@@ -70,13 +70,13 @@ function getExecPromise(conf: Config, servConf: any, serviceName: string, comman
 						state: 'success'
 					})
 				})
-				.then(res => {
-					return res.text()
-				}).then(res => {
-					if (res != "OK")
-						console.log(`API request: ${chalk.red(res)} for ${chalk.cyan(serviceName)}`)
-					resolve()
-				})
+					.then(res => {
+						return res.text()
+					}).then(res => {
+						if (res != 'OK')
+							console.log(`API request: ${chalk.red(res)} for ${chalk.cyan(serviceName)}`)
+						resolve()
+					})
 			}
 			else if (errorString != '') {
 				// Log error message on error
@@ -100,22 +100,22 @@ function getExecPromise(conf: Config, servConf: any, serviceName: string, comman
  * @returns - A promise that resolve(void) at the end
  */
 export function runDaemons(): Promise<void> {
-	return new Promise((resolve, _reject) => {
-		var execPromises: Array<Promise<void>> = Array()
+	return new Promise((resolve) => {
+		const execPromises: Array<Promise<void>> = []
 
 		// Check that config include the services section
 		if (!Object.keys(conf).includes('services')) {
-			console.log(chalk.red(`Your ${chalk.bold("config.yml")} doesn't contain the ${chalk.bold("services")} section.`))
+			console.log(chalk.red(`Your ${chalk.bold('config.yml')} doesn't contain the ${chalk.bold('services')} section.`))
 			return resolve()
 		}
 		// Check that config include the instance url
 		if (!Object.keys(conf).includes('instance')) {
-			console.log(chalk.red(`Your ${chalk.bold("config.yml")} doesn't contain the ${chalk.bold("intance url")}.`))
+			console.log(chalk.red(`Your ${chalk.bold('config.yml')} doesn't contain the ${chalk.bold('intance url')}.`))
 			return resolve()
 		}
 		// Check that config include the api key
 		if (!Object.keys(conf).includes('api_key')) {
-			console.log(chalk.red(`Your ${chalk.bold("config.yml")} doesn't contain the ${chalk.bold("api key")}.`))
+			console.log(chalk.red(`Your ${chalk.bold('config.yml')} doesn't contain the ${chalk.bold('api key')}.`))
 			return resolve()
 		}
 
@@ -134,12 +134,12 @@ export function runDaemons(): Promise<void> {
 				return
 
 			console.log(`Starting ${chalk.cyan(capitalize(name))}…`)
-			const cli = getCli(name).replace("<DATA>", JSON.stringify(service))
+			const cli = getCli(name).replace('<DATA>', JSON.stringify(service))
 			execPromises.push(getExecPromise(conf, service, name, cli))
 		})
 
 		Promise.allSettled(execPromises).then(() => {
-			console.log("✅ Done.")
+			console.log('✅ Done.')
 			resolve()
 		})
 	})
