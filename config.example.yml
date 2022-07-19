@@ -1,6 +1,6 @@
 instance: "https://streaks.chevro.fr"
 api_key: ""
-cron: "50 * * * *"
+cron: "40 * * * *"
 services:
   duolingo:
     enable: false
