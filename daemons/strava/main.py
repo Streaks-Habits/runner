@@ -48,5 +48,5 @@ for activity in user_data:
 # check if all activities are done or if user moved his ass (if there's not activities list)
 if len(settings['activities']) == 0 and moved_his_ass:
 	print('success')
-elif len(settings['activities']) > 0 and all(value == True for value in activities_done.values()):
+elif len(settings['activities']) > 0 and all(value is True for value in activities_done.values()):
 	print('success')
