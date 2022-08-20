@@ -32,12 +32,21 @@ user_data = json.loads(user_profile)['recentActivities']
 if not user_data:
 	log('Can\'t access user activities')
 
-moved_his_ass = 0
-for activity in user_data:
-	# If activity type is in the activities or if the activities array is empty
-	if activity['type'] in settings['activities'] or len(settings['activities']) == 0:
-		if activity['startDateLocal'] == 'Today':
-			moved_his_ass += 1
+# set every activities an not done
+activities_done = {}
+for activity in settings['activities']:
+	activities_done[activity] = False
 
-if moved_his_ass >= len(settings['activities']):
+# set activities cone from Strava data
+moved_his_ass = False
+for activity in user_data:
+	if activity['startDateLocal'] == 'Today':
+		moved_his_ass = True
+		if activity['type'] in activities_done:
+			activities_done[activity['type']] = True
+
+# check if all activities are done or if user moved his ass (if there's not activities list)
+if len(settings['activities']) == 0 and moved_his_ass:
+	print('success')
+elif len(settings['activities']) > 0 and all(value == True for value in activities_done.values()):
 	print('success')
