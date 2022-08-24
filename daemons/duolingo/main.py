@@ -1,14 +1,17 @@
 import json
 import sys
 import requests
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
 
 if len(sys.argv) != 2:
 	print('Usage: python main.py \'{"username": "<username>", "password": "<password>"}\'')
 	sys.exit(1)
 
 settings = json.loads(sys.argv[1])
-if 'username' not in settings or 'password' not in settings:
-	print('Usage: python main.py \'{"username": "<username>", "password": "<password>"}\'')
+if 'username' not in settings or 'password' not in settings or 'goal' not in settings or settings['goal'] not in ['streak', 'xp']:
+	print('Usage: python main.py \'{"username": "<username>", "password": "<password>", "goal": "<streak|xp>"}\'')
 	sys.exit(1)
 
 # Use a requests session to store cookies
@@ -30,6 +33,21 @@ if 'user_id' not in login_resp:
 user_info_req = req.get('https://www.duolingo.com/api/1/users/show?username=' + settings['username'])
 user_info_resp = json.loads(user_info_req.text)
 
-# Check that streak as expended today
-if user_info_resp['streak_extended_today']:
-	print('success')
+if settings['goal'] == 'streak':
+	# Check that streak as expended today
+	if user_info_resp['streak_extended_today']:
+		print('success')
+elif settings['goal'] == 'xp':
+	# Check that xp goals is reached today
+	xp_goal = user_info_resp['daily_goal']
+	today_xp = 0
+
+	lasts_activities = user_info_resp['calendar']
+	today_midnight = datetime.combine(date.today(), datetime.max.time()).timestamp() * 1000
+	yesterday_midnight = datetime.combine(date.today() - timedelta(days=1), datetime.max.time()).timestamp() * 1000
+	for activity in lasts_activities:
+		if activity['datetime'] > yesterday_midnight and activity['datetime'] < today_midnight:
+			today_xp += activity['improvement']
+
+	if today_xp >= xp_goal:
+		print('success')
