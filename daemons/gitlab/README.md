@@ -17,7 +17,7 @@ services:
 ```
 
 Testing
--------
+=======
 You can test the daemon in this way:
 ```bash
 python main.py '{"instance": "<instance>", "username": "<username>"}'

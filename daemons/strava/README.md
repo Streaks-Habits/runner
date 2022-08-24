@@ -17,7 +17,9 @@ services:
 ```
 
 `activities` is a table that contains the types of activities that validate your streak of the day.
+
 **Leave activities empty to allow you to validate your streak with any activity**
+
 The following are known types of activity (not exhaustive):
 - `run`
 - `workout`
@@ -31,7 +33,7 @@ services:
 ```
 
 Testing
--------
+=======
 You can test the daemon in this way:
 ```bash
 python main.py '{"athlete_id": "<athlete_id>", "activities": ["<activities>"]}'

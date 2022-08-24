@@ -17,8 +17,8 @@ services:
 ```
 
 Testing
--------
+=======
 You can test the daemon in this way:
 ```bash
-python main.py <login> <password>
+python main.py '{"username": "<username>", "password": "<password>"}'
 ```
