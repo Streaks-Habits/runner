@@ -1,12 +1,11 @@
-Gitlab runner
-=============
+# Gitlab runner
 
 This daemon checks that you have made a push on Gitlab this day.
 
 If you have made at least un push on Gitlab, your streaks will be validated.
 
-Configuration
-=============
+## Configuration
+
 ```yml
 services:
   gitlab:
@@ -16,9 +15,10 @@ services:
     username: "your_gitlab_username"
 ```
 
-Testing
-=======
+## Testing
+
 You can test the daemon in this way:
+
 ```bash
 python main.py '{"instance": "<instance>", "username": "<username>"}'
 ```

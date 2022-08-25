@@ -1,12 +1,11 @@
-Intra 42 runner
-===============
+# Intra 42 runner
 
 This daemon verifies that you have worked at school that day.
 
 If you have logged in to school for at least one minute, your streaks will be validated.
 
-Configuration
-=============
+## Configuration
+
 ```yml
 services:
   duolingo:
@@ -16,9 +15,10 @@ services:
     password: "your_duolingo_password"
 ```
 
-Testing
-=======
+## Testing
+
 You can test the daemon in this way:
+
 ```bash
 python main.py '{"username": "<username>", "password": "<password>"}'
 ```
