@@ -48,7 +48,7 @@ function getExecPromise(conf: IConfig, servConf: TServices, serviceName: string,
 
 			// Get error string if there's error
 			if (error)
-				errorString = `error: ${error.message}`
+				errorString = `error: ${error.message}: ${stderr}`
 			else if (stderr)
 				errorString = `command error: ${stderr}`
 			else if (stdout.trim() && stdout.trim() != 'success')
@@ -74,8 +74,20 @@ function getExecPromise(conf: IConfig, servConf: TServices, serviceName: string,
 						return res.text()
 					}).then(res => {
 						if (res != 'OK')
-							console.log(`API request: ${chalk.red(res)} for ${chalk.cyan(serviceName)}`)
-						resolve()
+							errorString = `${startDate.toISOString()} => ${serviceName} : API request: ${res}${os.EOL}`
+						else
+							resolve()
+					}).catch(err => {
+						errorString = `${startDate.toISOString()} => ${serviceName} : API request: ${err}${os.EOL}`
+					})
+					.finally(() => {
+						if (errorString != '') {
+							fs.appendFile(logPath, errorString, 'utf-8', (err) => {
+								if (err) console.log(chalk.red(err))
+
+								resolve()
+							})
+						}
 					})
 			}
 			else if (errorString != '') {
