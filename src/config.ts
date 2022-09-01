@@ -10,7 +10,8 @@ export interface IConfig {
 			enable: boolean,
 			calendar: string,
 			username: string,
-			password: string
+			password: string,
+			goal: string
 		},
 		gitlab: {
 			enable: boolean,
@@ -50,7 +51,8 @@ export const emptyConf: IConfig = {
 			enable: false,
 			calendar: '',
 			username: '',
-			password: ''
+			password: '',
+			goal: ''
 		},
 		gitlab: {
 			enable: false,
