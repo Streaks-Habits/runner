@@ -13,7 +13,7 @@ services:
     calendar: "your_calendar_id"
     username: "your_duolingo_login"
     password: "your_duolingo_password"
-    goal: "streak|xp"
+    goal: "streak|[num]xp" # e.g. "streaks" or "xp" or "55xp" or "100xp"...
 ```
 
 ### Goal Types
@@ -23,12 +23,17 @@ services:
   The streak type validates your day if you have expanded your Duolingo streaks.
 - **xp**
 
-  The xp type validates your day if you have reached your xp goal for the day on Duolingo.
+  The xp type validates your day if you have reached your xp goal for the day on Duolingo. The xp goal come from your Duolingo's settings.
+- **[num]xp**
+
+  The xp type validates your day if you have reached the given xp goal for the day on Duolingo.
+
+  *e.g. 25xp, 100xp*
 
 ## Testing
 
 You can test the daemon in this way:
 
 ```bash
-python main.py '{"username": "<username>", "password": "<password>", "goal": "<streak|xp>"}'
+python main.py '{"username": "<username>", "password": "<password>", "goal": "<streak|[num]xp>"}'
 ```

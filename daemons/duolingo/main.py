@@ -1,6 +1,7 @@
 import json
 import sys
 import requests
+import re
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -11,8 +12,14 @@ if len(sys.argv) != 2:
 
 settings = json.loads(sys.argv[1])
 if 'username' not in settings or 'password' not in settings or 'goal' not in settings or settings['goal'] not in ['streak', 'xp']:
-	print('Usage: python main.py \'{"username": "<username>", "password": "<password>", "goal": "<streak|xp>"}\'')
-	sys.exit(1)
+	xpreg = re.match(r'^(\d.)xp$', settings['goal'])
+	if (xpreg is not None):
+		# change xp goal to given number
+		settings['goal'] = 'xp'
+		settings['goal_xp'] = int(xpreg.group(1))
+	else:
+		print('Usage: python main.py \'{"username": "<username>", "password": "<password>", "goal": "<streak|[num]xp>"}\'')
+		sys.exit(1)
 
 # Use a requests session to store cookies
 req = requests.Session()
@@ -40,7 +47,11 @@ if settings['goal'] == 'streak':
 elif settings['goal'] == 'xp':
 	# Check that xp goals is reached today
 	xp_goal = user_info_resp['daily_goal']
+	# if xp goal is given, use that instead
+	if 'goal_xp' in settings:
+		xp_goal = settings['goal_xp']
 	today_xp = 0
+	print('xp_goal: ' + str(xp_goal))
 
 	lasts_activities = user_info_resp['calendar']
 	today_midnight = datetime.combine(date.today(), datetime.max.time()).timestamp() * 1000
