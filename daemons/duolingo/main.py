@@ -51,7 +51,6 @@ elif settings['goal'] == 'xp':
 	if 'goal_xp' in settings:
 		xp_goal = settings['goal_xp']
 	today_xp = 0
-	print('xp_goal: ' + str(xp_goal))
 
 	lasts_activities = user_info_resp['calendar']
 	today_midnight = datetime.combine(date.today(), datetime.max.time()).timestamp() * 1000
