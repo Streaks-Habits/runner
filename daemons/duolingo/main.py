@@ -12,7 +12,7 @@ if len(sys.argv) != 2:
 
 settings = json.loads(sys.argv[1])
 if 'username' not in settings or 'password' not in settings or 'goal' not in settings or settings['goal'] not in ['streak', 'xp']:
-	xpreg = re.match(r'^(\d.)xp$', settings['goal'])
+	xpreg = re.match(r'^(\d+)xp$', settings['goal'])
 	if (xpreg is not None):
 		# change xp goal to given number
 		settings['goal'] = 'xp'
@@ -61,3 +61,4 @@ elif settings['goal'] == 'xp':
 
 	if today_xp >= xp_goal:
 		print('success')
+	print(str(today_xp) + '/' + str(xp_goal))
