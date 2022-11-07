@@ -61,4 +61,3 @@ elif settings['goal'] == 'xp':
 
 	if today_xp >= xp_goal:
 		print('success')
-	print(str(today_xp) + '/' + str(xp_goal))
