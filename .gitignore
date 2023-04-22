@@ -1,5 +1,6 @@
-node_modules/
-dist/
+__pycache__/
+
 config.yml
 config.prod.yml
-log/
+newconf.yml
+.env
