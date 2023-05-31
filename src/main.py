@@ -25,7 +25,7 @@ parser_progresses.set_defaults(func=lambda x, y: parser_progresses.print_help())
 parser_progresses_list = subparsers_progresses.add_parser('list')
 parser_progresses_list.set_defaults(func=print_progresses)
 
-with open('newconf.yml') as f:
+with open('config.yml') as f:
 	config = yaml.safe_load(f)
 
 	api = Api(config['api_key'], config['instance'])

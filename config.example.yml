@@ -1,24 +1,20 @@
 instance: "https://streaks.chevro.fr"
-api_key: ""
-cron: "40 * * * *"
+api_key: "<your api key>"
+cron: "*/20 * * * *"
 services:
-  duolingo:
-    enable: false
-    calendar: ""
-    username: ""
-    password: ""
-  gitlab:
-    enable: false
-    calendar: ""
-    instance: ""
-    username: ""
-  intra42:
-    enable: false
-    calendar: ""
-    username: ""
-    password: ""
-  strava:
-    enable: false
-    calendar: ""
-    athlete_id: ""
-    activities: []
+- type: strava
+  name: "Strava"
+  enable: true
+  activities:
+  # All, AlpineSki, BackcountrySki, Canoeing, Crossfit, EBikeRide, Elliptical, EMountainBikeRide,
+  # Golf, GravelRide, Handcycle, Hike, IceSkate, InlineSkate, Kayaking, Kitesurf, MountainBikeRide,
+  # NordicSki, Ride, RockClimbing, RollerSki, Rowing, Run, Sail, Skateboard, Snowboard, Snowshoe,
+  # Soccer, StairStepper, StandUpPaddling, Surfing, Swim, TrailRun, Velomobile, VirtualRide,
+  # VirtualRun, Walk, WeightTraining, Wheelchair, Windsurf, Workout, Yoga
+  - 'Run'
+  - 'VirtualRun'
+  calendars:
+  - '<your calendar id>'
+  validation_measure: '4.7'  # optional, e.g. '4.7' (km)
+  progresses:
+  - '<your progress id>'

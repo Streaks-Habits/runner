@@ -3,22 +3,14 @@ stages:
 - test
 - docker-publish
 
-eslint:
-  image: node:latest
-  stage: lint
-  retry: 2
-  script:
-    - npm install @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint
-    - npm run test:lint:eslint
-
 flake8:
-  image: node:alpine
+  image: alpine
   stage: lint
   retry: 2
   script:
     - apk add python3 py3-pip
     - pip install flake8==3.9.2 flake8-tabs
-    - npm run test:lint:flake8
+    - flake8 --use-flake8-tabs --ignore=E501 daemons/
 
 sast:
   stage: test

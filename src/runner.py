@@ -59,7 +59,7 @@ def set_days(config, service, start, end):
 				print(Fore.YELLOW + Style.BRIGHT + '\t' + str(day) + ' ❎ Fail' + Style.RESET_ALL)
 			day += timedelta(days=1)
 
-with open('newconf.yml') as f:
+with open('config.yml') as f:
 	config = yaml.safe_load(f)
 
 	for service in config['services']:

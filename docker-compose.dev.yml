@@ -1,11 +1,11 @@
 version: "3.9"
 services:
-  streaks-runner:
+  streaks-cli:
     build: .
-    container_name: "streaks-runner"
+    container_name: "streaks-cli"
     restart: always
     environment:
       - TZ=Europe/Paris
     volumes:
-      - ./config.yml:/runner/config.yml
-      - ./log:/runner/log
+      - ./config.yml:/cli/config.yml
+      - ./.env:/cli/.env
