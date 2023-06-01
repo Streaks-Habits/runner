@@ -26,3 +26,6 @@ class Api:
 
 	def get_progresses(self):
 		return self._request('GET', '/api/v1/progresses/user/' + self.user_id)
+
+	def set_calendar_state(self, calendar_id: str, state: str, for_date: str):
+		return self._request('POST', f'/api/v1/calendars/state/{calendar_id}/{state}?for={for_date}')

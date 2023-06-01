@@ -1,36 +1,22 @@
-import yaml
 import importlib
-import argparse
 from pprint import pprint
 from datetime import date, timedelta
-import requests
 from colorama import Fore, Back, Style
 from rich import status
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--service', help='Service to run (default: *)', default='*')
-parser.add_argument('--force', help='When used with --service, run the specified service even if it is disabled. Has no impact if --service is not specified or equal to *.', action='store_true')
-parser.add_argument('--reset', help='Reset service(s) data', action='store_true')
-parser.add_argument('--start', help='Start date, ISO format, will run the service for every day between start and today (default: today)', default=str(date.today()))
+from api.api import Api
 
-args = parser.parse_args()
-
-def set_state(config, service, state, for_date):
-	API_ENDPOINT = f'{config["instance"]}/api/v1/calendars/state'
-
+def set_state(api: Api, service, state, for_date):
 	for cal in service['calendars']:
 		if state == '':
 			continue
-		resp = requests.post(
-			f'{API_ENDPOINT}/{cal}/{state}?for={for_date}',
-			headers={'x-api-key': config['api_key']},
-		)
+		resp = api.set_calendar_state(cal, state, for_date)
 		if resp.status_code != 200:
 			print('Error while setting state for calendar ' + cal)
 			print(resp.status_code)
 			print(resp.text)
 
-def set_days(config, service, start, end):
+def set_days(api: Api, service, start, end):
 	print(Fore.BLUE + Style.BRIGHT + service['name'] + Style.RESET_ALL)
 
 	with status.Status('', spinner='point', spinner_style='blue') as s:
@@ -51,7 +37,7 @@ def set_days(config, service, start, end):
 						break
 
 			# Set state with api
-			set_state(config, service, 'success' if is_success else '', day)
+			set_state(api, service, 'success' if is_success else '', day)
 
 			if is_success:
 				print(Fore.GREEN + Style.BRIGHT + '\t' + str(day) + ' ✅ Success' + Style.RESET_ALL)
@@ -59,9 +45,7 @@ def set_days(config, service, start, end):
 				print(Fore.YELLOW + Style.BRIGHT + '\t' + str(day) + ' ❎ Fail' + Style.RESET_ALL)
 			day += timedelta(days=1)
 
-with open('config.yml') as f:
-	config = yaml.safe_load(f)
-
+def run_service(api: Api, config, args):
 	for service in config['services']:
 		if args.service != '*' and service['name'] != args.service:
 			continue
@@ -77,7 +61,6 @@ with open('config.yml') as f:
 				print(Fore.RED + Style.BRIGHT + 'Invalid date format, use ISO format (YYYY-MM-DD)' + Style.RESET_ALL)
 				exit(1)
 
-			set_days(config, service, start, date.today())
+			set_days(api, service, start, date.today())
 		else:
-			set_days(config, service, date.today(), date.today())
-
+			set_days(api, service, date.today(), date.today())

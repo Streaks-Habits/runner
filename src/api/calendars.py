@@ -1,10 +1,12 @@
 from colorama import Fore, Back, Style
+from rich import status
 
 from api.api import Api
 
 
-def print_calendars(api: Api, args):
-	calendars = api.get_calendars()
+def print_calendars(api: Api, config, args):
+	with status.Status('', spinner='point', spinner_style='blue') as s:
+		calendars = api.get_calendars()
 
 	max_len = max([len(str(cal['current_streak'])) for cal in calendars])
 

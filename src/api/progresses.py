@@ -1,9 +1,11 @@
 from colorama import Fore, Style
+from rich import status
 
 from api.api import Api
 
-def print_progresses(api: Api, args):
-	progresses = api.get_progresses()
+def print_progresses(api: Api, config, args):
+	with status.Status('', spinner='point', spinner_style='blue') as s:
+		progresses = api.get_progresses()
 
 	max_len = max([len(f"{prog['current_progress']}/{prog['goal']}") for prog in progresses])
 
