@@ -3,6 +3,7 @@ from pprint import pprint
 from datetime import date, timedelta
 from colorama import Fore, Back, Style
 from rich import status
+import json
 
 from api.api import Api
 
@@ -10,11 +11,7 @@ def set_state(api: Api, service, state, for_date):
 	for cal in service['calendars']:
 		if state == '':
 			continue
-		resp = api.set_calendar_state(cal, state, for_date)
-		if resp.status_code != 200:
-			print('Error while setting state for calendar ' + cal)
-			print(resp.status_code)
-			print(resp.text)
+		api.set_calendar_state(cal, state, for_date)
 
 def set_days(api: Api, service, start, end):
 	print(Fore.BLUE + Style.BRIGHT + service['name'] + Style.RESET_ALL)
@@ -36,13 +33,25 @@ def set_days(api: Api, service, start, end):
 						is_success = True
 						break
 
-			# Set state with api
-			set_state(api, service, 'success' if is_success else '', day)
-
 			if is_success:
-				print(Fore.GREEN + Style.BRIGHT + '\t' + str(day) + ' ✅ Success' + Style.RESET_ALL)
+				print(Fore.GREEN + Style.BRIGHT + '\t' + str(day) + ' ✅ Success' + Style.RESET_ALL, end='')
 			else:
-				print(Fore.YELLOW + Style.BRIGHT + '\t' + str(day) + ' ❎ Fail' + Style.RESET_ALL)
+				print(Fore.YELLOW + Style.BRIGHT + '\t' + str(day) + ' ❎ Fail' + Style.RESET_ALL, end='')
+
+			# Set state with api
+			try:
+				set_state(api, service, 'success' if is_success else '', day)
+				print()
+			except Exception as e:
+				message = str(e)
+				# If error is JSON and contains message
+				if message.startswith('{') and message.endswith('}'):
+					json_error = json.loads(message)
+					if 'message' in json_error:
+						message = json_error['message']
+
+				print(Fore.RED + Style.BRIGHT + ' ❌ Error: ' + message + Style.RESET_ALL)
+
 			day += timedelta(days=1)
 
 def run_service(api: Api, config, args):
