@@ -3,9 +3,10 @@ services:
   streaks-cli:
     image: "registry.chevro.fr/streaks/cli:latest"
     container_name: "streaks-cli"
-    restart: always
+    restart: on-failure
     environment:
       - TZ=Europe/Paris
     volumes:
       - ./config.yml:/cli/config.yml
       - ./.env:/cli/.env
+      - ./store:/cli/store

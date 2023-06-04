@@ -1,12 +1,24 @@
 FROM alpine as main
 
-# Install daemons dependencies
+# Install dependencies
 RUN apk add --no-cache python3 py3-pip tzdata
+# Install selenium dependencies
+RUN apk add --no-cache \
+    xvfb \
+    gdk-pixbuf \
+    xvfb-run \
+    dbus \
+    ttf-freefont \
+    chromium \
+    chromium-chromedriver
+
 # Copy sources and builded sources
 WORKDIR /cli
-COPY src src
-COPY requirements.txt .
-# Install dependencies
-RUN pip3 install -r requirements.txt
 
-CMD sh -c "python src/runner.py"
+# Install python dependencies
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY src src
+
+CMD sh -c "python src/main.py runner"

@@ -5,3 +5,4 @@ config.yml
 config.prod.yml
 newconf.yml
 .env
+store/

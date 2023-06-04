@@ -56,9 +56,9 @@ def set_days(api: Api, service, start, end):
 
 def run_service(api: Api, config, args):
 	for service in config['services']:
-		if args.service != '*' and service['name'] != args.service:
+		if args.service != True and service['name'] != args.service:
 			continue
-		if args.service != '*' and service['enable'] is False and args.force is False:
+		if service['enable'] is False and args.force is False:
 			print('Service ' + service['name'] + ' is disabled (use --force to run it anyway)')
 			continue
 

@@ -1,86 +1,129 @@
-import json
-import sys
 import requests
-import re
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import dotenv
+import os
+from pathlib import Path
+from datetime import date, datetime
+import pickle
 
-# if len(sys.argv) != 2:
-# 	print('Usage: python main.py \'{"username": "<username>", "password": "<password>"}\'')
-# 	sys.exit(1)
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium_stealth import stealth
 
-# settings = json.loads(sys.argv[1])
-# if 'username' not in settings or 'password' not in settings or 'goal' not in settings or settings['goal'] not in ['streak', 'xp']:
-# 	xpreg = re.match(r'^(\d+)xp$', settings['goal'])
-# 	if (xpreg is not None):
-# 		# change xp goal to given number
-# 		settings['goal'] = 'xp'
-# 		settings['goal_xp'] = int(xpreg.group(1))
-# 	else:
-# 		print('Usage: python main.py \'{"username": "<username>", "password": "<password>", "goal": "<streak|[num]xp>"}\'')
-# 		sys.exit(1)
+URL = 'https://duolingo.com/'
+USER_INFOS_URL = 'https://www.duolingo.com/api/1/users/show?username='
+SESSION_FILE = Path('store/duolingo_session.pickle')
 
-settings = {
-	'username': 'cestoliv',
-	'password': '70ru@iu?3b3NV*SmGIVeI;d1!?\\V2Nw&J2f\\?TIQiOsG/pBRxM',
-	'goal': 'streak'
-}
+dotenv_file = Path('.env')
+dotenv_file.touch(exist_ok=True)
+dotenv.load_dotenv(dotenv_file)
 
-# Use a requests session to store cookies
-req = requests.Session()
+def login():
+	# Create virtual display
+	# display = Display(visible=0, size=(1920, 1080))
+	# display.start()
+	# Login to duolingo with selenium
+	options = webdriver.ChromeOptions()
+	# disable extensions
+	options.add_argument("--disable-extensions")
+	options.add_argument("--headless=new")
+	options.add_argument("--no-sandbox")
+	options.add_argument("--disable-gpu")
+	options.add_argument("--disable-dev-shm-usage")
+	options.add_experimental_option("excludeSwitches", ["enable-automation"])
+	options.add_experimental_option('useAutomationExtension', False)
+	driver = webdriver.Chrome(options=options)
+	driver.set_window_size(1920, 1080)
 
-# Login
-login_req = req.post(
-	'https://www.duolingo.com/login',
-	headers={
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1474.0',
-	},
-	json={
-		'login': settings['username'],
-		'password': settings['password']
-	}
-)
-if login_req.status_code != 200:
-	print(login_req.status_code)
-	print(login_req.text)
-	exit(1)
-else:
-	print(login_req.text)
+	stealth(driver,
+		languages=["en-US", "en"],
+		vendor="Google Inc.",
+		platform="Win32",
+		webgl_vendor="Intel Inc.",
+		renderer="Intel Iris OpenGL Engine",
+		fix_hairline=True,
+	)
 
-# Check that login is successful
-# if 'user_id' not in login_resp:
-# 	print(login_resp)
-# 	sys.exit(1)
+	driver.get(URL)
 
-# Retrieve user info
-user_info_req = req.get(
-	'https://www.duolingo.com/api/1/users/show?username=' + settings['username'],
-	headers={
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1474.0',
-	},
-)
-print(user_info_req.text)
-user_info_resp = json.loads(user_info_req.text)
+	# Click "I already have an account" button
+	login_popup_button = driver.find_element(by=By.CSS_SELECTOR, value="button[data-test='have-account']")
+	login_popup_button.click()
+	# Fill username
+	username_input = driver.find_element(by=By.CSS_SELECTOR, value="input[data-test='email-input']")
+	username_input.send_keys(os.getenv('DUOLINGO_USERNAME'))
+	# Fill password
+	password_input = driver.find_element(by=By.CSS_SELECTOR, value="input[data-test='password-input']")
+	password_input.send_keys(os.getenv('DUOLINGO_PASSWORD'))
+	# Click "Log in" button
+	login_button = driver.find_element(by=By.CSS_SELECTOR, value="button[data-test='register-button']")
+	login_button.click()
 
-if settings['goal'] == 'streak':
-	# Check that streak as expended today
-	if user_info_resp['streak_extended_today']:
-		print('success')
-elif settings['goal'] == 'xp':
-	# Check that xp goals is reached today
-	xp_goal = user_info_resp['daily_goal']
-	# if xp goal is given, use that instead
-	if 'goal_xp' in settings:
-		xp_goal = settings['goal_xp']
-	today_xp = 0
+	# Wait for login (check if the "Login button" is still here)
+	def wait_for_login(driver):
+		try:
+			driver.find_element(by=By.CSS_SELECTOR, value="button[data-test='register-button']")
+			return False
+		except:
+			return True
+	wait = WebDriverWait(driver, 10)
+	wait.until(wait_for_login)
 
-	lasts_activities = user_info_resp['calendar']
-	today_midnight = datetime.combine(date.today(), datetime.max.time()).timestamp() * 1000
-	yesterday_midnight = datetime.combine(date.today() - timedelta(days=1), datetime.max.time()).timestamp() * 1000
-	for activity in lasts_activities:
-		if activity['datetime'] > yesterday_midnight and activity['datetime'] < today_midnight:
-			today_xp += activity['improvement']
+	# Create store folder if not exists
+	Path(Path(SESSION_FILE).parent).mkdir(parents=True, exist_ok=True)
+	# Save session
+	with open(SESSION_FILE, 'wb') as f:
+		session_data = {
+			'cookies': driver.get_cookies(),
+		}
+		pickle.dump(session_data, f)
 
-	if today_xp >= xp_goal:
-		print('success')
+def user_info_if_logged():
+	# Check if session is stored
+	if not os.path.isfile(SESSION_FILE):
+		return False
+	# Check if session is still valid
+	cookies = pickle.load(open(SESSION_FILE, "rb"))['cookies']
+	session = requests.Session()
+	for cookie in cookies:
+		session.cookies.set(cookie['name'], cookie['value'])
+	try:
+		response = session.get(
+			USER_INFOS_URL + os.getenv('DUOLINGO_USERNAME'),
+			headers={
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1474.0',
+			},
+		)
+		if response.status_code != 200:
+			return False
+		user_info = response.json()
+	except:
+		return False
+	return user_info
+
+def get_activities(after=date.today()):
+
+	user_info = user_info_if_logged()
+	if not user_info:
+		login()
+		user_info = user_info_if_logged()
+
+	activities = []
+	for activity in user_info['calendar']:
+		if activity['datetime'] > datetime.fromisoformat(after.isoformat()).timestamp() * 1000:
+			activities.append({
+				'date': datetime.fromtimestamp(activity['datetime'] / 1000),
+				'xp': activity['improvement'],
+			})
+	return activities
+
+def get_data(settings, after=date.today()):
+	return get_activities(after)
+
+def is_success(settings, day):
+	if not day:
+		return False
+	if settings['goal'].endswith('xp'):
+		xp_goal = int(settings['goal'].replace('xp', ''))
+		return day['xp'] >= xp_goal
+	return True

@@ -1,11 +1,14 @@
 version: "3.9"
 services:
   streaks-cli:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: "streaks-cli"
-    restart: always
+    restart: on-failure
     environment:
       - TZ=Europe/Paris
     volumes:
       - ./config.yml:/cli/config.yml
       - ./.env:/cli/.env
+      - ./store:/cli/store

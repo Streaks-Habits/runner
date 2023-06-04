@@ -5,3 +5,5 @@ python-dotenv==1.0.0
 PyYAML==6.0
 requests==2.28.2
 rich==13.4.1
+selenium==4.1.4
+selenium-stealth==1.0.6

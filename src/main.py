@@ -29,7 +29,7 @@ parser_progresses_list.set_defaults(func=print_progresses)
 
 # Runner parser
 parser_runner = subparsers.add_parser('runner')
-parser_runner.add_argument('--service', help='Service to run (default: *)', default='*')
+parser_runner.add_argument('--service', help='Service to run (default: all)', default=True)
 parser_runner.add_argument('--force', help='When used with --service, run the specified service even if it is disabled. Has no impact if --service is not specified or equal to *.', action='store_true')
 parser_runner.add_argument('--reset', help='Reset service(s) data', action='store_true')
 parser_runner.add_argument('--start', help='Start date, ISO format, will run the service for every day between start and today (default: today)', default=str(date.today()))
