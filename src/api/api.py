@@ -17,7 +17,7 @@ class Api:
 			headers={'x-api-key': self.api_key},
 			json=data,
 		)
-		if resp.status_code != 200:
+		if resp.status_code != 200 and resp.status_code != 201:
 			raise Exception(resp.text)
 		return resp.json()
 
@@ -29,3 +29,11 @@ class Api:
 
 	def set_calendar_state(self, calendar_id: str, state: str, for_date: str):
 		return self._request('POST', f'/api/v1/calendars/state/{calendar_id}/{state}?for={for_date}')
+
+	def create_calendar(self, new_calendar: dict):
+		new_calendar['user'] = self.user_id
+		return self._request('POST', '/api/v1/calendars', new_calendar)
+
+	def create_progress(self, new_progress: dict):
+		new_progress['user'] = self.user_id
+		return self._request('POST', '/api/v1/progresses', new_progress)

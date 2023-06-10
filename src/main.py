@@ -3,8 +3,8 @@ import argparse
 from datetime import date
 
 from api.api import Api
-from api.calendars import print_calendars
-from api.progresses import print_progresses
+from api.calendars import print_calendars, create_calendar
+from api.progresses import print_progresses, create_progress
 from runner import run_service
 
 # General parser
@@ -18,6 +18,9 @@ parser_calendars.set_defaults(func=lambda x, y, z: parser_calendars.print_help()
 	# Calendars list parser
 parser_calendars_list = subparsers_calendars.add_parser('list')
 parser_calendars_list.set_defaults(func=print_calendars)
+	# Calendars create parser
+parser_calendars_create = subparsers_calendars.add_parser('add')
+parser_calendars_create.set_defaults(func=create_calendar)
 
 # Progresses parser
 parser_progresses = subparsers.add_parser('progresses')
@@ -26,6 +29,9 @@ parser_progresses.set_defaults(func=lambda x, y, z: parser_progresses.print_help
 	# Progresses list parser
 parser_progresses_list = subparsers_progresses.add_parser('list')
 parser_progresses_list.set_defaults(func=print_progresses)
+	# Progresses create parser
+parser_progresses_create = subparsers_progresses.add_parser('add')
+parser_progresses_create.set_defaults(func=create_progress)
 
 # Runner parser
 parser_runner = subparsers.add_parser('runner')
