@@ -30,14 +30,51 @@ def print_calendars(api: Api, config, args):
 		print(Style.BRIGHT + cal['name'] + Style.RESET_ALL + ' ')
 
 def create_calendar(api: Api, config, args):
-	# Ask user for informations
-		# Calendar name
-	name = inquirer.text(message='Calendar name', validate=lambda _, x: len(x.strip()) > 0)
-		# Ask if user wants to enable notifications
-	notifications = inquirer.checkbox(message='Enable notifications?', choices=['Reminders', 'Congratulations'], default=['Reminders', 'Congratulations'])
-		# Ask for the agenda
 	days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-	agenda = inquirer.checkbox(message='Agenda (disabled days will be frozen)', choices=days, default=days[:5])
+
+	# If one of the arguments is not None
+	has_args = False
+	for arg in vars(args):
+		if getattr(args, arg) is not None and arg != 'func':
+			if arg in ['disable_reminders', 'disable_congrats']:
+				if getattr(args, arg):
+					has_args = True
+			else:
+				has_args = True
+
+	if not has_args:
+		# Ask user for informations
+			# Calendar name
+		name = inquirer.text(message='Calendar name', validate=lambda _, x: len(x.strip()) > 0)
+			# Ask if user wants to enable notifications
+		notifications = inquirer.checkbox(message='Enable notifications?', choices=['Reminders', 'Congratulations'], default=['Reminders', 'Congratulations'])
+			# Ask for the agenda
+		agenda = inquirer.checkbox(message='Agenda (disabled days will be frozen)', choices=days, default=days[:5])
+	elif not 'name' in args or args.name is None:
+		print(Style.BRIGHT + Fore.RED + 'You must specify a name!' + Style.RESET_ALL)
+		return
+	else:
+		if args.name.strip() == '':
+			print(Style.BRIGHT + Fore.RED + 'You must specify a name!' + Style.RESET_ALL)
+			return
+		name = args.name
+
+		notifications = ['Reminders', 'Congratulations']
+		if 'disable_reminders' in args and args.disable_reminders:
+			notifications.remove('Reminders')
+		if 'disable_congrats' in args and args.disable_congrats:
+			notifications.remove('Congratulations')
+
+		agenda = days[:5]
+		if 'agenda' in args and args.agenda is not None:
+			agenda = []
+			for day in args.agenda.split(','):
+				day = day.strip().capitalize()
+				if day in days:
+					agenda.append(day)
+				else:
+					print(Style.BRIGHT + Fore.RED + 'Invalid day: ' + day + Style.RESET_ALL)
+					return
 
 	new_calendar = {
 		'name': name.strip(),

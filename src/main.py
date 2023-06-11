@@ -20,6 +20,10 @@ parser_calendars_list = subparsers_calendars.add_parser('list')
 parser_calendars_list.set_defaults(func=print_calendars)
 	# Calendars create parser
 parser_calendars_create = subparsers_calendars.add_parser('add')
+parser_calendars_create.add_argument('--name', help='Calendar name', required=False)
+parser_calendars_create.add_argument('--disable-reminders', help='Disable reminders notifications', required=False, action='store_true')
+parser_calendars_create.add_argument('--disable-congrats', help='Disable congratulations notifications', required=False, action='store_true')
+parser_calendars_create.add_argument('--agenda', help='Agenda (disabled days will be frozen)', required=False)
 parser_calendars_create.set_defaults(func=create_calendar)
 	# Delete calendar parser.
 parser_calendars_delete = subparsers_calendars.add_parser('delete')
