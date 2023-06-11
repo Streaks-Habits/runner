@@ -3,8 +3,8 @@ import argparse
 from datetime import date
 
 from api.api import Api
-from api.calendars import print_calendars, create_calendar
-from api.progresses import print_progresses, create_progress
+from api.calendars import print_calendars, create_calendar, delete_calendar
+from api.progresses import print_progresses, create_progress, delete_progress
 from runner import run_service
 
 # General parser
@@ -21,6 +21,10 @@ parser_calendars_list.set_defaults(func=print_calendars)
 	# Calendars create parser
 parser_calendars_create = subparsers_calendars.add_parser('add')
 parser_calendars_create.set_defaults(func=create_calendar)
+	# Delete calendar parser.
+parser_calendars_delete = subparsers_calendars.add_parser('delete')
+parser_calendars_delete.add_argument('calendar_id', help='Calendar ID to delete (Optionnal)', nargs='?', default=None)
+parser_calendars_delete.set_defaults(func=delete_calendar)
 
 # Progresses parser
 parser_progresses = subparsers.add_parser('progresses')
@@ -32,6 +36,10 @@ parser_progresses_list.set_defaults(func=print_progresses)
 	# Progresses create parser
 parser_progresses_create = subparsers_progresses.add_parser('add')
 parser_progresses_create.set_defaults(func=create_progress)
+	# Delete progress parser.
+parser_progresses_delete = subparsers_progresses.add_parser('delete')
+parser_progresses_delete.add_argument('progress_id', help='Progress ID to delete (Optionnal)', nargs='?', default=None)
+parser_progresses_delete.set_defaults(func=delete_progress)
 
 # Runner parser
 parser_runner = subparsers.add_parser('runner')
