@@ -3,7 +3,7 @@ import argparse
 from datetime import date
 
 from api.api import Api
-from api.calendars import print_calendars, create_calendar, delete_calendar
+from api.calendars import print_calendars, create_calendar, delete_calendar, edit_calendar
 from api.progresses import print_progresses, create_progress, delete_progress
 from runner import run_service
 
@@ -29,6 +29,16 @@ parser_calendars_create.set_defaults(func=create_calendar)
 parser_calendars_delete = subparsers_calendars.add_parser('delete')
 parser_calendars_delete.add_argument('calendar_id', help='Calendar ID to delete (Optionnal)', nargs='?', default=None)
 parser_calendars_delete.set_defaults(func=delete_calendar)
+	# Edit calendar parser.
+parser_calendars_edit = subparsers_calendars.add_parser('edit')
+parser_calendars_edit.add_argument('calendar_id', help='Calendar ID to edit (Optionnal)', nargs='?', default=None)
+parser_calendars_edit.add_argument('--name', help='Calendar name to set', required=False)
+parser_calendars_edit.add_argument('--disable-reminders', help='Disable reminders notifications', required=False, action='store_true')
+parser_calendars_edit.add_argument('--enable-reminders', help='Enable reminders notifications', required=False, action='store_true')
+parser_calendars_edit.add_argument('--disable-congrats', help='Disable congratulations notifications', required=False, action='store_true')
+parser_calendars_edit.add_argument('--enable-congrats', help='Enable congratulations notifications', required=False, action='store_true')
+parser_calendars_edit.add_argument('--agenda', help='Agenda to set (disabled days will be frozen)', required=False)
+parser_calendars_edit.set_defaults(func=edit_calendar)
 
 # Progresses parser
 parser_progresses = subparsers.add_parser('progresses')

@@ -42,17 +42,19 @@ def create_calendar(api: Api, config, args):
 			else:
 				has_args = True
 
+	# If no arguments are specified, ask user for informations
 	if not has_args:
-		# Ask user for informations
 			# Calendar name
 		name = inquirer.text(message='Calendar name', validate=lambda _, x: len(x.strip()) > 0)
 			# Ask if user wants to enable notifications
 		notifications = inquirer.checkbox(message='Enable notifications?', choices=['Reminders', 'Congratulations'], default=['Reminders', 'Congratulations'])
 			# Ask for the agenda
 		agenda = inquirer.checkbox(message='Agenda (disabled days will be frozen)', choices=days, default=days[:5])
+	# If arguments are specified, check that at least the name is specified
 	elif not 'name' in args or args.name is None:
 		print(Style.BRIGHT + Fore.RED + 'You must specify a name!' + Style.RESET_ALL)
 		return
+	# If arguments are specified, and there is a name, check the arguments
 	else:
 		if args.name.strip() == '':
 			print(Style.BRIGHT + Fore.RED + 'You must specify a name!' + Style.RESET_ALL)
@@ -104,3 +106,91 @@ def delete_calendar(api: Api, config, args):
 			return
 
 	print(Style.BRIGHT + Fore.GREEN + 'Calendar deleted!' + Style.RESET_ALL)
+
+def edit_calendar(api: Api, config, args):
+	days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+	# If one of the arguments is not None
+	has_args = False
+	for arg in vars(args):
+		if getattr(args, arg) is not None and arg != 'func' and arg != 'calendar_id':
+			if arg in ['disable_reminders', 'disable_congrats', 'enable_reminders', 'enable_congrats']:
+				if getattr(args, arg):
+					has_args = True
+			else:
+				has_args = True
+
+	if not 'calendar_id' in args or args.calendar_id is None:
+		# Ask user for calendar id
+		calendar_id = inquirer.text(message='Calendar id', validate=lambda _, x: len(x.strip()) > 0)
+	else:
+		calendar_id = args.calendar_id
+
+	# Get existing calendar
+	with status.Status('', spinner='point', spinner_style='blue') as s:
+		try:
+			calendar = api.get_calendar(calendar_id)
+		except Exception as e:
+			print(Style.BRIGHT + Fore.RED + str(e) + Style.RESET_ALL)
+			return
+
+	# If no arguments are specified, ask user for informations
+	if not has_args:
+			# Calendar name
+		name = inquirer.text(message='Calendar name', default=calendar['name'], validate=lambda _, x: len(x.strip()) > 0)
+			# Ask if user wants to enable notifications
+		notifications = inquirer.checkbox(message='Enable notifications?', choices=['Reminders', 'Congratulations'], default=['Reminders', 'Congratulations'])
+			# Ask for the agenda
+		agenda = inquirer.checkbox(message='Agenda (disabled days will be frozen)', choices=days, default=days[:5])
+	# If arguments are specified, and there is a name, check the arguments
+	else:
+		name = calendar['name']
+		if 'name' in args and args.name is not None and args.name.strip() != '':
+			name = args.name
+
+		notifications = []
+		if calendar['notifications']['reminders']:
+			notifications.append('Reminders')
+		if calendar['notifications']['congrats']:
+			notifications.append('Congratulations')
+
+		# Check that there is not both disable and enable
+		if 'disable_reminders' in args and args.disable_reminders and 'enable_reminders' in args and args.enable_reminders:
+			print(Style.BRIGHT + Fore.RED + 'You cannot both enable and disable reminders!' + Style.RESET_ALL)
+			return
+		if 'disable_congrats' in args and args.disable_congrats and 'enable_congrats' in args and args.enable_congrats:
+			print(Style.BRIGHT + Fore.RED + 'You cannot both enable and disable congratulations!' + Style.RESET_ALL)
+			return
+
+		if 'disable_reminders' in args and args.disable_reminders:
+			notifications.remove('Reminders')
+		if 'disable_congrats' in args and args.disable_congrats:
+			notifications.remove('Congratulations')
+		if 'enable_reminders' in args and args.enable_reminders:
+			notifications.append('Reminders')
+		if 'enable_congrats' in args and args.enable_congrats:
+			notifications.append('Congratulations')
+
+		agenda = [days[x] for x in range(len(days)) if calendar['agenda'][x]]
+		if 'agenda' in args and args.agenda is not None:
+			agenda = []
+			for day in args.agenda.split(','):
+				day = day.strip().capitalize()
+				if day in days:
+					agenda.append(day)
+				else:
+					print(Style.BRIGHT + Fore.RED + 'Invalid day: ' + day + Style.RESET_ALL)
+					return
+
+	edited_calendar = {
+		'name': name.strip(),
+		'agenda': [day in agenda for day in days],
+		'notifications': {
+			'reminders': 'Reminders' in notifications,
+			'congrats': 'Congratulations' in notifications,
+		}
+	}
+
+	with status.Status('', spinner='point', spinner_style='blue') as s:
+		api.edit_calendar(calendar_id, edited_calendar)
+	print(Style.BRIGHT + Fore.GREEN + 'Calendar updated!' + Style.RESET_ALL)
