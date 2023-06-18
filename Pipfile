@@ -28,4 +28,5 @@ types-requests = "*"
 [scripts]
 lint = "flake8 src/"
 format = "black --line-length 79 src/"
+type = "mypy --ignore-missing-imports src/"
 compile = "python -m nuitka src/main.py --standalone --onefile --follow-imports -o streaks"
