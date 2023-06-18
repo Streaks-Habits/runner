@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+authlib = "*"
+colorama = "*"
+dateparser = "*"
+python-dotenv = "*"
+pyyaml = "*"
+requests = "*"
+rich = "*"
+selenium = "*"
+selenium-stealth = "*"
+inquirer = "*"
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+types-colorama = "*"
+types-dateparser = "*"
+types-pyyaml = "*"
+types-requests = "*"
+
+[requires]
+
+[scripts]
+lint = "flake8 src/"
+format = "black --line-length 79 src/"
+compile = "python -m nuitka src/main.py --standalone --onefile --follow-imports -o streaks"
