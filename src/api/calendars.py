@@ -198,6 +198,15 @@ def edit_calendar(api: Api, config, args):
             print(Style.BRIGHT + Fore.RED + str(e) + Style.RESET_ALL)
             return
 
+    # Set default values
+    default_notifications = []
+    if calendar["notifications"]["reminders"]:
+        default_notifications.append("Reminders")
+    if calendar["notifications"]["congrats"]:
+        default_notifications.append("Congratulations")
+
+    default_agenda = [days[x] for x in range(len(days)) if calendar["agenda"][x]]
+
     # If no arguments are specified, ask user for informations
     if not has_args:
         # Calendar name
@@ -207,16 +216,21 @@ def edit_calendar(api: Api, config, args):
             validate=lambda _, x: len(x.strip()) > 0,
         )
         # Ask if user wants to enable notifications
+        default_notifications = []
+        if calendar["notifications"]["reminders"]:
+            default_notifications.append("Reminders")
+        if calendar["notifications"]["congrats"]:
+            default_notifications.append("Congratulations")
         notifications = inquirer.checkbox(
             message="Enable notifications?",
             choices=["Reminders", "Congratulations"],
-            default=["Reminders", "Congratulations"],
+            default=default_notifications,
         )
         # Ask for the agenda
         agenda = inquirer.checkbox(
             message="Agenda (disabled days will be frozen)",
             choices=days,
-            default=days[:5],
+            default=default_agenda,
         )
     # If arguments are specified, and there is a name, check the arguments
     else:
@@ -227,12 +241,6 @@ def edit_calendar(api: Api, config, args):
             and args.name.strip() != ""
         ):
             name = args.name
-
-        notifications = []
-        if calendar["notifications"]["reminders"]:
-            notifications.append("Reminders")
-        if calendar["notifications"]["congrats"]:
-            notifications.append("Congratulations")
 
         # Check that there is not both disable and enable
         if (
@@ -271,7 +279,7 @@ def edit_calendar(api: Api, config, args):
         if "enable_congrats" in args and args.enable_congrats:
             notifications.append("Congratulations")
 
-        agenda = [days[x] for x in range(len(days)) if calendar["agenda"][x]]
+        agenda = default_agenda
         if "agenda" in args and args.agenda is not None:
             agenda = []
             for day in args.agenda.split(","):
