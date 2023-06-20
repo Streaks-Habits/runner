@@ -46,19 +46,64 @@ def print_progresses(api: Api, config, args):
 
 
 def create_progress(api: Api, config, args):
-    # Ask user for informations
-    # Progress name
-    name = inquirer.text(
-        message="Progress name", validate=lambda _, x: len(x.strip()) > 0
-    )
-    # Ask for the goal
-    goal = inquirer.text(message="Goal", validate=lambda _, x: x.isdigit())
-    # Ask for the recurrence unit
-    recurrence_unit = inquirer.list_input(
-        message="Recurrence unit",
-        choices=["daily", "weekly", "monthly", "yearly"],
-        default="monthly",
-    )
+    reccurence_units = ["daily", "weekly", "monthly", "yearly"]
+
+    # If one of the arguments is not None
+    has_args = False
+    for arg in vars(args):
+        if getattr(args, arg) is not None and arg != "func":
+            has_args = True
+
+    # If no arguments are specified, ask user for informations
+    if not has_args:    # Progress name
+        name = inquirer.text(
+            message="Progress name", validate=lambda _, x: len(x.strip()) > 0
+        )
+        # Ask for the goal
+        goal = inquirer.text(message="Goal", validate=lambda _, x: x.isdigit())
+        # Ask for the recurrence unit
+        recurrence_unit = inquirer.list_input(
+            message="Recurrence unit",
+            choices=["daily", "weekly", "monthly", "yearly"],
+            default="monthly",
+        )
+    # If arguments are specified, and there is at least a name, check the arguments
+    else:
+        if "name" not in args or args.name is None or len(args.name.strip()) == 0:
+            print(
+                Style.BRIGHT
+                + Fore.RED
+                + "You must specify a name for the progress"
+                + Style.RESET_ALL
+            )
+            return
+        else:
+            name = args.name
+
+        goal = 100
+        if "goal" in args and args.goal is not None:
+            if not args.goal.isdigit():
+                print(
+                    Style.BRIGHT
+                    + Fore.RED
+                    + "Goal must be a number"
+                    + Style.RESET_ALL
+                )
+                return
+            goal = args.goal
+
+        recurrence_unit = 'monthly'
+        if "unit" in args and args.unit is not None:
+            if args.unit not in reccurence_units:
+                print(
+                    Style.BRIGHT
+                    + Fore.RED
+                    + "Recurrence unit must be one of the following: "
+                    + ", ".join(reccurence_units)
+                    + Style.RESET_ALL
+                )
+                return
+            recurrence_unit = args.unit
 
     new_progress = {
         "name": name.strip(),

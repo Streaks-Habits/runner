@@ -86,7 +86,7 @@ def create_calendar(api: Api, config, args):
         return
     # If arguments are specified, and there is a name, check the arguments
     else:
-        if args.name.strip() == "":
+        if "name" not in args or args.name is None or len(args.name.strip()) == 0:
             print(
                 Style.BRIGHT
                 + Fore.RED

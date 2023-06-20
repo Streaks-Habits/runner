@@ -114,6 +114,15 @@ parser_progresses_list = subparsers_progresses.add_parser("list")
 parser_progresses_list.set_defaults(func=print_progresses)
 # Progresses create parser
 parser_progresses_create = subparsers_progresses.add_parser("add")
+parser_progresses_create.add_argument(
+    "--name", help="Progress name", required=False
+)
+parser_progresses_create.add_argument(
+    "--goal", help="Progress goal", required=False
+)
+parser_progresses_create.add_argument(
+    "--unit", help="Progress unit", required=False
+)
 parser_progresses_create.set_defaults(func=create_progress)
 # Delete progress parser.
 parser_progresses_delete = subparsers_progresses.add_parser("delete")
