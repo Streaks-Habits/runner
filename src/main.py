@@ -9,7 +9,7 @@ from api.calendars import (
     delete_calendar,
     edit_calendar,
 )
-from api.progresses import print_progresses, create_progress, delete_progress
+from api.progresses import print_progresses, create_progress, delete_progress, edit_progress
 from runner import run_service
 
 ################
@@ -124,6 +124,24 @@ parser_progresses_delete.add_argument(
     default=None,
 )
 parser_progresses_delete.set_defaults(func=delete_progress)
+# Edit progress parser.
+parser_progresses_edit = subparsers_progresses.add_parser("edit")
+parser_progresses_edit.add_argument(
+    "progress_id",
+    help="Progress ID to edit (Optionnal)",
+    nargs="?",
+    default=None,
+)
+parser_progresses_edit.add_argument(
+    "--name", help="Progress name to set", required=False
+)
+parser_progresses_edit.add_argument(
+    "--goal", help="Progress goal to set", required=False
+)
+parser_progresses_edit.add_argument(
+    "--unit", help="Progress unit to set", required=False
+)
+parser_progresses_edit.set_defaults(func=edit_progress)
 
 ###############
 # Runner parser

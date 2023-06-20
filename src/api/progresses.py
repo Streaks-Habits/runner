@@ -87,3 +87,100 @@ def delete_progress(api: Api, config, args):
             print(Style.BRIGHT + Fore.RED + str(e) + Style.RESET_ALL)
             return
     print(Style.BRIGHT + Fore.GREEN + "Progress deleted!" + Style.RESET_ALL)
+
+
+def edit_progress(api: Api, config, args):
+    reccurence_units = ["daily", "weekly", "monthly", "yearly"]
+
+    # If one of the arguments is not None
+    has_args = False
+    for arg in vars(args):
+        if (
+            getattr(args, arg) is not None
+            and arg != "func"
+            and arg != "progress_id"
+        ):
+            has_args = True
+
+    # If the progress id is specified, get it
+    if "progress_id" not in args or args.progress_id is None:
+        # Ask user for progress id
+        progress_id = inquirer.text(
+            message="Progress id", validate=lambda _, x: len(x.strip()) > 0
+        )
+    else:
+        progress_id = args.progress_id
+
+    # Get existing progress
+    with status.Status("", spinner="point", spinner_style="blue"):
+        try:
+            progress = api.get_progress(progress_id)
+        except Exception as e:
+            print(Style.BRIGHT + Fore.RED + str(e) + Style.RESET_ALL)
+            return
+
+    # If no arguments are specified, ask user for informations
+    if not has_args:
+        # Progress name
+        name = inquirer.text(
+            message="Progress name",
+            default=progress["name"],
+            validate=lambda _, x: len(x.strip()) > 0
+        )
+        # Ask for the goal
+        goal = inquirer.text(
+            message="Goal",
+            default=progress["goal"],
+            validate=lambda _, x: x.isdigit()
+        )
+        # Ask for the recurrence unit
+        recurrence_unit = inquirer.list_input(
+            message="Recurrence unit",
+            choices=reccurence_units,
+            default=progress["recurrence_unit"],
+        )
+    # If arguments are specified, and there is a name, check the arguments
+    else:
+        name = progress["name"]
+        if (
+            "name" in args
+            and args.name is not None
+            and args.name.strip() != ""
+        ):
+            name = args.name
+
+        goal = progress["goal"]
+        if "goal" in args and args.goal is not None:
+            if not args.goal.isdigit():
+                print(
+                    Style.BRIGHT
+                    + Fore.RED
+                    + "Goal must be a number"
+                    + Style.RESET_ALL
+                )
+                return
+            goal = args.goal
+
+        recurrence_unit = progress["recurrence_unit"]
+        if "unit" in args and args.unit is not None:
+            if args.unit not in reccurence_units:
+                print(
+                    Style.BRIGHT
+                    + Fore.RED
+                    + "Recurrence unit must be one of the following: "
+                    + ", ".join(reccurence_units)
+                    + Style.RESET_ALL
+                )
+                return
+            recurrence_unit = args.unit
+        
+
+    edited_progress = {
+        "name": name.strip(),
+        "goal": int(goal),
+        "recurrence_unit": recurrence_unit,
+    }
+
+    with status.Status("", spinner="point", spinner_style="blue"):
+        api.edit_progress(progress_id, edited_progress)
+    print(Style.BRIGHT + Fore.GREEN + "Progress updated!" + Style.RESET_ALL)
