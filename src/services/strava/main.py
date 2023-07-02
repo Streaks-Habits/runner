@@ -22,8 +22,7 @@ def _get_activities(access_token, after=date.today(), per_page=30):
     while True:
         # Get activities
         resp = requests.get(
-            f"{ATHLETE_ACTIVITIES_ENDPOINT}\
-                ?page={page}&per_page={per_page}&after={after_timestamp}",
+            f"{ATHLETE_ACTIVITIES_ENDPOINT}?page={page}&per_page={per_page}&after={after_timestamp}",
             headers={"Authorization": "Bearer " + access_token},
         )
         if resp.status_code == 200:

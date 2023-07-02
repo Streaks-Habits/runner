@@ -33,8 +33,7 @@ def get_events(after=date.today(), per_page=20):
     page = 1
     while True:
         api_avents = req(
-            f"{URL}/api/v4/events\
-                ?after={after}&page={page}&per_page={per_page}"
+            f"{URL}/api/v4/events?after={after}&page={page}&per_page={per_page}"
         )
         if len(api_avents) == 0:
             break
