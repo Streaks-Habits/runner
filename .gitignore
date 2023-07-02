@@ -3,6 +3,7 @@ __pycache__/
 main.build/
 main.dist/
 main.onefile-build/
+streaks
 
 config.yml
 config.prod.yml
