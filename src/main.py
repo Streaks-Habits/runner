@@ -9,7 +9,12 @@ from api.calendars import (
     delete_calendar,
     edit_calendar,
 )
-from api.progresses import print_progresses, create_progress, delete_progress, edit_progress
+from api.progresses import (
+    print_progresses,
+    create_progress,
+    delete_progress,
+    edit_progress,
+)
 from runner import run_service
 
 ################
@@ -23,17 +28,13 @@ subparsers = parser.add_subparsers()
 ##################
 parser_calendars = subparsers.add_parser("calendars")
 subparsers_calendars = parser_calendars.add_subparsers()
-parser_calendars.set_defaults(
-    func=lambda x, y, z: parser_calendars.print_help()
-)
+parser_calendars.set_defaults(func=lambda x, y, z: parser_calendars.print_help())
 # Calendars list parser
 parser_calendars_list = subparsers_calendars.add_parser("list")
 parser_calendars_list.set_defaults(func=print_calendars)
 # Calendars create parser
 parser_calendars_create = subparsers_calendars.add_parser("add")
-parser_calendars_create.add_argument(
-    "--name", help="Calendar name", required=False
-)
+parser_calendars_create.add_argument("--name", help="Calendar name", required=False)
 parser_calendars_create.add_argument(
     "--disable-reminders",
     help="Disable reminders notifications",
@@ -106,23 +107,15 @@ parser_calendars_edit.set_defaults(func=edit_calendar)
 ###################
 parser_progresses = subparsers.add_parser("progresses")
 subparsers_progresses = parser_progresses.add_subparsers()
-parser_progresses.set_defaults(
-    func=lambda x, y, z: parser_progresses.print_help()
-)
+parser_progresses.set_defaults(func=lambda x, y, z: parser_progresses.print_help())
 # Progresses list parser
 parser_progresses_list = subparsers_progresses.add_parser("list")
 parser_progresses_list.set_defaults(func=print_progresses)
 # Progresses create parser
 parser_progresses_create = subparsers_progresses.add_parser("add")
-parser_progresses_create.add_argument(
-    "--name", help="Progress name", required=False
-)
-parser_progresses_create.add_argument(
-    "--goal", help="Progress goal", required=False
-)
-parser_progresses_create.add_argument(
-    "--unit", help="Progress unit", required=False
-)
+parser_progresses_create.add_argument("--name", help="Progress name", required=False)
+parser_progresses_create.add_argument("--goal", help="Progress goal", required=False)
+parser_progresses_create.add_argument("--unit", help="Progress unit", required=False)
 parser_progresses_create.set_defaults(func=create_progress)
 # Delete progress parser.
 parser_progresses_delete = subparsers_progresses.add_parser("delete")
@@ -166,9 +159,7 @@ parser_runner.add_argument(
           Has no impact if --service is not specified or equal to *.",
     action="store_true",
 )
-parser_runner.add_argument(
-    "--reset", help="Reset service(s) data", action="store_true"
-)
+parser_runner.add_argument("--reset", help="Reset service(s) data", action="store_true")
 parser_runner.add_argument(
     "--start",
     help="Start date, ISO format, will run the service for every day between \

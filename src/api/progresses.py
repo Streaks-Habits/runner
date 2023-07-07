@@ -14,10 +14,7 @@ def print_progresses(api: Api, config, args):
             return
 
     max_len = max(
-        [
-            len(f"{prog['current_progress']}/{prog['goal']}")
-            for prog in progresses
-        ]
+        [len(f"{prog['current_progress']}/{prog['goal']}") for prog in progresses]
     )
 
     for prog in progresses:
@@ -29,8 +26,7 @@ def print_progresses(api: Api, config, args):
             print(Fore.RED, end="")
 
         print(
-            f"{prog['current_progress']}/{prog['goal']}".ljust(max_len, " ")
-            + " ",
+            f"{prog['current_progress']}/{prog['goal']}".ljust(max_len, " ") + " ",
             end="",
         )
         print(Style.RESET_ALL, end="")
@@ -55,7 +51,7 @@ def create_progress(api: Api, config, args):
             has_args = True
 
     # If no arguments are specified, ask user for informations
-    if not has_args:    # Progress name
+    if not has_args:  # Progress name
         name = inquirer.text(
             message="Progress name", validate=lambda _, x: len(x.strip()) > 0
         )
@@ -84,15 +80,12 @@ def create_progress(api: Api, config, args):
         if "goal" in args and args.goal is not None:
             if not args.goal.isdigit():
                 print(
-                    Style.BRIGHT
-                    + Fore.RED
-                    + "Goal must be a number"
-                    + Style.RESET_ALL
+                    Style.BRIGHT + Fore.RED + "Goal must be a number" + Style.RESET_ALL
                 )
                 return
             goal = args.goal
 
-        recurrence_unit = 'monthly'
+        recurrence_unit = "monthly"
         if "unit" in args and args.unit is not None:
             if args.unit not in reccurence_units:
                 print(
@@ -140,11 +133,7 @@ def edit_progress(api: Api, config, args):
     # If one of the arguments is not None
     has_args = False
     for arg in vars(args):
-        if (
-            getattr(args, arg) is not None
-            and arg != "func"
-            and arg != "progress_id"
-        ):
+        if getattr(args, arg) is not None and arg != "func" and arg != "progress_id":
             has_args = True
 
     # If the progress id is specified, get it
@@ -170,13 +159,11 @@ def edit_progress(api: Api, config, args):
         name = inquirer.text(
             message="Progress name",
             default=progress["name"],
-            validate=lambda _, x: len(x.strip()) > 0
+            validate=lambda _, x: len(x.strip()) > 0,
         )
         # Ask for the goal
         goal = inquirer.text(
-            message="Goal",
-            default=progress["goal"],
-            validate=lambda _, x: x.isdigit()
+            message="Goal", default=progress["goal"], validate=lambda _, x: x.isdigit()
         )
         # Ask for the recurrence unit
         recurrence_unit = inquirer.list_input(
@@ -187,21 +174,14 @@ def edit_progress(api: Api, config, args):
     # If arguments are specified, and there is a name, check the arguments
     else:
         name = progress["name"]
-        if (
-            "name" in args
-            and args.name is not None
-            and args.name.strip() != ""
-        ):
+        if "name" in args and args.name is not None and args.name.strip() != "":
             name = args.name
 
         goal = progress["goal"]
         if "goal" in args and args.goal is not None:
             if not args.goal.isdigit():
                 print(
-                    Style.BRIGHT
-                    + Fore.RED
-                    + "Goal must be a number"
-                    + Style.RESET_ALL
+                    Style.BRIGHT + Fore.RED + "Goal must be a number" + Style.RESET_ALL
                 )
                 return
             goal = args.goal
@@ -218,7 +198,6 @@ def edit_progress(api: Api, config, args):
                 )
                 return
             recurrence_unit = args.unit
-        
 
     edited_progress = {
         "name": name.strip(),

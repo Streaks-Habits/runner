@@ -35,10 +35,14 @@ def get_events(after=date.today(), per_page=20):
         api_avents = req(
             f"{URL}/api/v4/events?after={after}&page={page}&per_page={per_page}"
         )
+        print(page, len(api_avents))
         if len(api_avents) == 0:
             break
 
+        i = 0
         for api_event in api_avents:
+            print(i)
+            i += 1
             # Get project info
             project = req(f"{URL}/api/v4/projects/{api_event['project_id']}")
             events.append(

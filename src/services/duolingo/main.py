@@ -132,9 +132,7 @@ def get_activities(after=date.today()):
         ):
             activities.append(
                 {
-                    "date": datetime.fromtimestamp(
-                        activity["datetime"] / 1000
-                    ),
+                    "date": datetime.fromtimestamp(activity["datetime"] / 1000),
                     "xp": activity["improvement"],
                 }
             )

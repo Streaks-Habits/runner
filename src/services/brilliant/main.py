@@ -14,9 +14,7 @@ if not os.getenv("BRILLIANT_SESSION_ID"):
     raise Exception("Brilliant: Missing 'BRILLIANT_SESSION_ID' in ENV")
 
 # Fetch home page with session cookie
-resp = requests.get(
-    URL, cookies={"sessionid": os.getenv("BRILLIANT_SESSION_ID", "")}
-)
+resp = requests.get(URL, cookies={"sessionid": os.getenv("BRILLIANT_SESSION_ID", "")})
 # Extract the "calendar":[] array from the page
 m = re.search(r'calendar":(\[.*?\]),', resp.text)
 if not m:

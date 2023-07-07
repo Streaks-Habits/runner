@@ -1,3 +1,4 @@
+from datetime import date
 from colorama import Fore, Style
 from rich import status
 import inquirer
@@ -20,9 +21,21 @@ def print_calendars(api: Api, config, args):
     max_len = max([len(str(cal["current_streak"])) for cal in calendars])
 
     for cal in calendars:
+        try:
+            cal_info = api.get_month(cal["_id"], date.today().strftime("%Y-%m"))
+        except Exception as e:
+            print(Style.BRIGHT + Fore.RED + str(e) + Style.RESET_ALL)
+            return
+        day_str = date.today().strftime("%Y-%m-%d")
+
         print(Fore.BLUE + cal["_id"] + Style.RESET_ALL + " ", end="")
+        # if success
         if cal["streak_expended_today"]:
             print(Fore.GREEN, end="")
+        # if frozen
+        elif day_str in cal_info["days"] and cal_info["days"][day_str] == "freeze":
+            print(Fore.BLUE, end="")
+        # if fail
         else:
             print(Fore.RED, end="")
 
@@ -77,21 +90,13 @@ def create_calendar(api: Api, config, args):
         )
     # If arguments are specified, check that at least the name is specified
     elif "name" not in args or args.name is None:
-        print(
-            Style.BRIGHT
-            + Fore.RED
-            + "You must specify a name!"
-            + Style.RESET_ALL
-        )
+        print(Style.BRIGHT + Fore.RED + "You must specify a name!" + Style.RESET_ALL)
         return
     # If arguments are specified, and there is a name, check the arguments
     else:
         if "name" not in args or args.name is None or len(args.name.strip()) == 0:
             print(
-                Style.BRIGHT
-                + Fore.RED
-                + "You must specify a name!"
-                + Style.RESET_ALL
+                Style.BRIGHT + Fore.RED + "You must specify a name!" + Style.RESET_ALL
             )
             return
         name = args.name
@@ -166,11 +171,7 @@ def edit_calendar(api: Api, config, args):
     # If one of the arguments is not None
     has_args = False
     for arg in vars(args):
-        if (
-            getattr(args, arg) is not None
-            and arg != "func"
-            and arg != "calendar_id"
-        ):
+        if getattr(args, arg) is not None and arg != "func" and arg != "calendar_id":
             if arg in [
                 "disable_reminders",
                 "disable_congrats",
@@ -235,11 +236,7 @@ def edit_calendar(api: Api, config, args):
     # If arguments are specified, and there is a name, check the arguments
     else:
         name = calendar["name"]
-        if (
-            "name" in args
-            and args.name is not None
-            and args.name.strip() != ""
-        ):
+        if "name" in args and args.name is not None and args.name.strip() != "":
             name = args.name
 
         # Check that there is not both disable and enable

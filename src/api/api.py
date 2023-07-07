@@ -58,11 +58,12 @@ class Api:
         return self._request("GET", "/api/v1/progresses/" + progress_id)
 
     def edit_calendar(self, calendar_id: str, new_calendar: dict):
-        return self._request(
-            "PUT", "/api/v1/calendars/" + calendar_id, new_calendar
-        )
+        return self._request("PUT", "/api/v1/calendars/" + calendar_id, new_calendar)
 
     def edit_progress(self, progress_id: str, new_progress: dict):
+        return self._request("PUT", "/api/v1/progresses/" + progress_id, new_progress)
+
+    def get_month(self, calendar_id: str, month: str):
         return self._request(
-            "PUT", "/api/v1/progresses/" + progress_id, new_progress
+            "GET", "/api/v1/calendars/month/" + calendar_id + "?month=" + month
         )

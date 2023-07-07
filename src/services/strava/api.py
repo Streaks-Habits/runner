@@ -5,9 +5,7 @@ from authlib.integrations.requests_client import OAuth2Session
 
 AUTHORIZATION_ENDPOINT = "https://www.strava.com/oauth/authorize"
 TOKEN_ENDPOINT = "https://www.strava.com/oauth/token"
-ATHLETE_ACTIVITIES_ENDPOINT = (
-    "https://www.strava.com/api/v3/athlete/activities"
-)
+ATHLETE_ACTIVITIES_ENDPOINT = "https://www.strava.com/api/v3/athlete/activities"
 
 dotenv_file = Path(".env")
 dotenv_file.touch(exist_ok=True)
@@ -62,9 +60,7 @@ def refresh_and_get_access_token():
     # Check that STRAVA_ACCESS_TOKEN and STRAVA_REFRESH_TOKEN are set
     access_token = ""
     refresh_token = ""
-    if not os.getenv("STRAVA_ACCESS_TOKEN") or not os.getenv(
-        "STRAVA_REFRESH_TOKEN"
-    ):
+    if not os.getenv("STRAVA_ACCESS_TOKEN") or not os.getenv("STRAVA_REFRESH_TOKEN"):
         access_token, refresh_token = get_access_token()
     else:
         access_token, refresh_token = refresh_access_token(

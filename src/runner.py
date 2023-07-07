@@ -18,9 +18,7 @@ def set_days(api: Api, service, start, end):
     print(Fore.BLUE + Style.BRIGHT + service["name"] + Style.RESET_ALL)
 
     with status.Status("", spinner="point", spinner_style="blue"):
-        mod = importlib.import_module(
-            ".main", package="services." + service["type"]
-        )
+        mod = importlib.import_module(".main", package="services." + service["type"])
 
         # Get data
         data = mod.get_data(service, start)
@@ -70,11 +68,7 @@ def set_days(api: Api, service, start, end):
                         message = json_error["message"]
 
                 print(
-                    Fore.RED
-                    + Style.BRIGHT
-                    + " ❌ Error: "
-                    + message
-                    + Style.RESET_ALL
+                    Fore.RED + Style.BRIGHT + " ❌ Error: " + message + Style.RESET_ALL
                 )
 
             day += timedelta(days=1)
