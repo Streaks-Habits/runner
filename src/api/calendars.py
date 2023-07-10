@@ -28,12 +28,22 @@ def print_calendars(api: Api, config, args):
             return
         day_str = date.today().strftime("%Y-%m-%d")
 
-        print(Fore.BLUE + cal["_id"] + Style.RESET_ALL + " ", end="")
+        # calendar id color (blue if enabled, grey if disabled)
+        if cal["enabled"]:
+            print(Fore.BLUE, end="")
+        else:
+            print(Fore.LIGHTBLACK_EX, end="")
+        print(cal["_id"] + Style.RESET_ALL + " ", end="")
+
         # if success
         if cal["streak_expended_today"]:
             print(Fore.GREEN, end="")
         # if frozen
-        elif day_str in cal_info["days"] and cal_info["days"][day_str] == "freeze":
+        elif (
+            "days" in cal_info
+            and day_str in cal_info["days"]
+            and cal_info["days"][day_str] == "freeze"
+        ):
             print(Fore.BLUE, end="")
         # if fail
         else:
@@ -64,7 +74,7 @@ def create_calendar(api: Api, config, args):
     has_args = False
     for arg in vars(args):
         if getattr(args, arg) is not None and arg != "func":
-            if arg in ["disable_reminders", "disable_congrats"]:
+            if arg in ["disable_reminders", "disable_congrats", "enable", "disable"]:
                 if getattr(args, arg):
                     has_args = True
             else:
@@ -88,6 +98,8 @@ def create_calendar(api: Api, config, args):
             choices=days,
             default=days[:5],
         )
+        # Ask if the calendar should be enabled
+        enabled = inquirer.confirm(message="Enable calendar?", default=True)
     # If arguments are specified, check that at least the name is specified
     elif "name" not in args or args.name is None:
         print(Style.BRIGHT + Fore.RED + "You must specify a name!" + Style.RESET_ALL)
@@ -124,6 +136,12 @@ def create_calendar(api: Api, config, args):
                     )
                     return
 
+        enabled = True
+        if "enable" in args and args.enable:
+            enabled = True
+        if "disable" in args and args.disable:
+            enabled = False
+
     new_calendar = {
         "name": name.strip(),
         "agenda": [day in agenda for day in days],
@@ -131,6 +149,7 @@ def create_calendar(api: Api, config, args):
             "reminders": "Reminders" in notifications,
             "congrats": "Congratulations" in notifications,
         },
+        "enabled": enabled,
     }
 
     with status.Status("", spinner="point", spinner_style="blue"):
@@ -177,6 +196,8 @@ def edit_calendar(api: Api, config, args):
                 "disable_congrats",
                 "enable_reminders",
                 "enable_congrats",
+                "enable",
+                "disable",
             ]:
                 if getattr(args, arg):
                     has_args = True
@@ -205,6 +226,7 @@ def edit_calendar(api: Api, config, args):
         default_notifications.append("Reminders")
     if calendar["notifications"]["congrats"]:
         default_notifications.append("Congratulations")
+    notifications = default_notifications
 
     default_agenda = [days[x] for x in range(len(days)) if calendar["agenda"][x]]
 
@@ -232,6 +254,10 @@ def edit_calendar(api: Api, config, args):
             message="Agenda (disabled days will be frozen)",
             choices=days,
             default=default_agenda,
+        )
+        # Ask if the calendar should be enabled
+        enabled = inquirer.confirm(
+            message="Enable calendar?", default=calendar["enabled"]
         )
     # If arguments are specified, and there is a name, check the arguments
     else:
@@ -293,6 +319,12 @@ def edit_calendar(api: Api, config, args):
                     )
                     return
 
+        enabled = calendar["enabled"]
+        if "enable" in args and args.enable:
+            enabled = True
+        if "disable" in args and args.disable:
+            enabled = False
+
     edited_calendar = {
         "name": name.strip(),
         "agenda": [day in agenda for day in days],
@@ -300,6 +332,7 @@ def edit_calendar(api: Api, config, args):
             "reminders": "Reminders" in notifications,
             "congrats": "Congratulations" in notifications,
         },
+        "enabled": enabled,
     }
 
     with status.Status("", spinner="point", spinner_style="blue"):

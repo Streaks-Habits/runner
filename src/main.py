@@ -50,6 +50,18 @@ parser_calendars_create.add_argument(
 parser_calendars_create.add_argument(
     "--agenda", help="Agenda (disabled days will be frozen)", required=False
 )
+parser_calendars_create.add_argument(
+    "--enable",
+    help="Enable calendar",
+    required=False,
+    action="store_true",
+)
+parser_calendars_create.add_argument(
+    "--disable",
+    help="Disable calendar",
+    required=False,
+    action="store_true",
+)
 parser_calendars_create.set_defaults(func=create_calendar)
 # Delete calendar parser.
 parser_calendars_delete = subparsers_calendars.add_parser("delete")
@@ -99,6 +111,18 @@ parser_calendars_edit.add_argument(
     "--agenda",
     help="Agenda to set (disabled days will be frozen)",
     required=False,
+)
+parser_calendars_edit.add_argument(
+    "--enable",
+    help="Enable calendar",
+    required=False,
+    action="store_true",
+)
+parser_calendars_edit.add_argument(
+    "--disable",
+    help="Disable calendar",
+    required=False,
+    action="store_true",
 )
 parser_calendars_edit.set_defaults(func=edit_calendar)
 
