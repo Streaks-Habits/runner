@@ -18,7 +18,12 @@ def print_progresses(api: Api, config, args):
     )
 
     for prog in progresses:
-        print(Fore.BLUE + prog["_id"] + Style.RESET_ALL + " ", end="")
+        # calendar id color (blue if enabled, grey if disabled)
+        if prog["enabled"]:
+            print(Fore.BLUE, end="")
+        else:
+            print(Fore.LIGHTBLACK_EX, end="")
+        print(prog["_id"] + Style.RESET_ALL + " ", end="")
 
         if prog["current_progress"] >= prog["goal"]:
             print(Fore.GREEN, end="")
@@ -48,7 +53,11 @@ def create_progress(api: Api, config, args):
     has_args = False
     for arg in vars(args):
         if getattr(args, arg) is not None and arg != "func":
-            has_args = True
+            if arg in ["enable", "disable"]:
+                if getattr(args, arg):
+                    has_args = True
+            else:
+                has_args = True
 
     # If no arguments are specified, ask user for informations
     if not has_args:  # Progress name
@@ -63,6 +72,8 @@ def create_progress(api: Api, config, args):
             choices=["daily", "weekly", "monthly", "yearly"],
             default="monthly",
         )
+        # Ask if the progress should be enabled
+        enabled = inquirer.confirm(message="Enable progress", default=True)
     # If arguments are specified, and there is at least a name, check the arguments
     else:
         if "name" not in args or args.name is None or len(args.name.strip()) == 0:
@@ -98,10 +109,17 @@ def create_progress(api: Api, config, args):
                 return
             recurrence_unit = args.unit
 
+        enabled = True
+        if "enable" in args and args.enable:
+            enabled = True
+        elif "disable" in args and args.disable:
+            enabled = False
+
     new_progress = {
         "name": name.strip(),
         "goal": int(goal),
         "recurrence_unit": recurrence_unit,
+        "enabled": enabled,
     }
 
     with status.Status("", spinner="point", spinner_style="blue"):
@@ -134,7 +152,11 @@ def edit_progress(api: Api, config, args):
     has_args = False
     for arg in vars(args):
         if getattr(args, arg) is not None and arg != "func" and arg != "progress_id":
-            has_args = True
+            if arg in ["enable", "disable"]:
+                if getattr(args, arg):
+                    has_args = True
+            else:
+                has_args = True
 
     # If the progress id is specified, get it
     if "progress_id" not in args or args.progress_id is None:
@@ -171,6 +193,10 @@ def edit_progress(api: Api, config, args):
             choices=reccurence_units,
             default=progress["recurrence_unit"],
         )
+        # Ask if the progress should be enabled
+        enabled = inquirer.confirm(
+            message="Enable progress", default=progress["enabled"]
+        )
     # If arguments are specified, and there is a name, check the arguments
     else:
         name = progress["name"]
@@ -199,10 +225,17 @@ def edit_progress(api: Api, config, args):
                 return
             recurrence_unit = args.unit
 
+        enabled = progress["enabled"]
+        if "enable" in args and args.enable:
+            enabled = True
+        elif "disable" in args and args.disable:
+            enabled = False
+
     edited_progress = {
         "name": name.strip(),
         "goal": int(goal),
         "recurrence_unit": recurrence_unit,
+        "enabled": enabled,
     }
 
     with status.Status("", spinner="point", spinner_style="blue"):

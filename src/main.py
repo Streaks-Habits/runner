@@ -140,6 +140,12 @@ parser_progresses_create = subparsers_progresses.add_parser("add")
 parser_progresses_create.add_argument("--name", help="Progress name", required=False)
 parser_progresses_create.add_argument("--goal", help="Progress goal", required=False)
 parser_progresses_create.add_argument("--unit", help="Progress unit", required=False)
+parser_progresses_create.add_argument(
+    "--enable", help="Enable progress", required=False, action="store_true"
+)
+parser_progresses_create.add_argument(
+    "--disable", help="Disable progress", required=False, action="store_true"
+)
 parser_progresses_create.set_defaults(func=create_progress)
 # Delete progress parser.
 parser_progresses_delete = subparsers_progresses.add_parser("delete")
@@ -166,6 +172,12 @@ parser_progresses_edit.add_argument(
 )
 parser_progresses_edit.add_argument(
     "--unit", help="Progress unit to set", required=False
+)
+parser_progresses_edit.add_argument(
+    "--enable", help="Enable progress", required=False, action="store_true"
+)
+parser_progresses_edit.add_argument(
+    "--disable", help="Disable progress", required=False, action="store_true"
 )
 parser_progresses_edit.set_defaults(func=edit_progress)
 
