@@ -1,14 +1,14 @@
-# Streaks Runner
+# Streaks CLI
 
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 ![Gitlab pipeline status (self-hosted)](https://img.shields.io/gitlab/pipeline-status/streaks/runner?branch=main&gitlab_url=https%3A%2F%2Fgit.chevro.fr&style=flat-square)
-![Maintenance](https://img.shields.io/maintenance/yes/2022?style=flat-square)
+![Maintenance](https://img.shields.io/maintenance/yes/2023?style=flat-square)
 
 <img src="src/brand/logo.svg" height="60" width="60" align="right">
 
-Streaks Runner, to automate the completion of your tasks on the streaks habit tracking application.
+Streaks CLI, to manage your calendars and progresses, ant to automate the completion of your tasks on the streaks habit tracking application.
 
-This runner will fetch data from third party services to verify that you have followed your habit and enter it on your dashboard.
+The runners will fetch data from third party services to verify that you have followed your habit and enter it on your dashboard.
 
 ## Supported services
 
