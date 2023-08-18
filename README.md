@@ -14,10 +14,10 @@ The runners will fetch data from third party services to verify that you have fo
 
 Here is a list of supported services, each service has its own README which contains its configuration instructions for the `config.yml` file.
 
-- [Duolingo](daemons/duolingo/)
-- [Gitlab](daemons/gitlab/)
-- [Intra 42](daemons/intra42/)
-- [Strava](daemons/strava/)
+- [Duolingo](src/services/duolingo/)
+- [Strava](src/services/strava/)
+- [Gitlab](src/services/gitlab/)
+- [Brilliant](src/services/brilliant/)
 
 ## Installation
 
