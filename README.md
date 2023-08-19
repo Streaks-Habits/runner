@@ -26,9 +26,9 @@ Here is a list of supported services, each service has its own README which cont
 Download the `docker-compose.yml` and a sample `config.yml`
 
 ```bash
-mkdir streaks-runner && cd "$_"
-wget https://git.chevro.fr/streaks/runner/-/raw/main/docker-compose.yml
-wget https://git.chevro.fr/streaks/runner/-/raw/main/config.example.yml -O config.yml
+mkdir streaks-cli && cd "$_"
+wget https://git.chevro.fr/streaks/cli/-/raw/main/docker-compose.yml
+wget https://git.chevro.fr/streaks/cli/-/raw/main/config.example.yml -O config.yml
 ```
 
 Edit the `docker-compose.yml` to suit your needs, especially the **TZ** (for timezone) environment variable.
@@ -54,48 +54,27 @@ You can check that everything went well by looking at the container logs:
 docker-compose logs
 ```
 
-Or by looking at the daemon logs:
-
-```bash
-cat logs/daemons.log
-```
-
 ### Manual install
 
 Officially supported on Linux, may work on another platform.
 
 Install the following dependencies on your server:
 
-- NodeJS (with npm)
 - Python v3 (with pip)
 
 Clone the repository:
 
 ```bash
-git clone https://git.chevro.fr/streaks/runner.git streaks-runner && cd streaks-runner
+git clone https://git.chevro.fr/streaks/cli.git streaks-cli && cd streaks-cli
 ```
 
-You can now install the runner dependencies:
+You can now install the cli dependencies:
 
 ```bash
-npm i
-pip3 install -r daemons/requirements.txt
+pipenv install
 ```
 
 **Go to the [Configuration](#configuration) section to edit your `config.yml` file, then come back here.**
-
-Build and start the server with:
-
-```bash
-npm run build
-npm run start
-```
-
-You can check that everything went well by looking at the daemons logs:
-
-```bash
-cat logs/daemons.log
-```
 
 ## Configuration
 
