@@ -43,10 +43,49 @@ pipenv run compile
 
 ### Calendars
 
-#### List calendars
+```bash
+# List available calendars
+./streaks calendars list
+# Add a new calendar
+./streask calendars add
+    [--name <name>] [--enable] [--disable]
+    [--disable-reminders] [--disable-congrats]
+    [--agenda <comma separated list of seven true/false values>]
+# Edit a calendar
+./streaks calendars edit <calendar_id>
+    [--name <name>] [--enable] [--disable]
+    [--disable-reminders] [--enable-reminders] 
+    [--disable-congrats] [--enable-congrats] 
+    [--agenda <comma separated list of seven true/false values>] 
+# Delete a calendar
+./streaks calendars delete <calendar_id>
+```
+
+### Progresses
 
 ```bash
-./streaks calendars list
+# List available progresses
+./streaks progresses list
+# Add a new progress
+./streaks progresses add
+    [--name <name>] [--enable] [--disable]
+    [--goal <number>] [--unit <daily|weekly|monthly|yearly>]
+# Edit a progress
+./streaks progresses edit <progress_id>
+    [--name <name>] [--enable] [--disable]
+    [--goal <number>] [--unit <daily|weekly|monthly|yearly>]
+# Delete a progress
+./streaks progresses delete <progress_id>
+```
+
+### Runners
+
+```bash
+./streaks runners # Run all runners
+    [--service <service name>] # Run a specific runner
+    [--force] # When used with --service, run the specified service even if it is disabled.
+    [--reset] # Reset service(s) data (remove everything)
+    [--start <ISO date>] # Will run the service for every day from the specified date to today
 ```
 
 ## Configuration
