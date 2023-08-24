@@ -10,75 +10,87 @@ Streaks CLI, to manage your calendars and progresses, ant to automate the comple
 
 The runners will fetch data from third party services to verify that you have followed your habit and enter it on your dashboard.
 
-## Supported services
-
-Here is a list of supported services, each service has its own README which contains its configuration instructions for the `config.yml` file.
-
-- [Duolingo](src/services/duolingo/)
-- [Strava](src/services/strava/)
-- [Gitlab](src/services/gitlab/)
-- [Brilliant](src/services/brilliant/)
-
 ## Installation
-
-### With Docker (recommended)
-
-Download the `docker-compose.yml` and a sample `config.yml`
-
-```bash
-mkdir streaks-cli && cd "$_"
-wget https://git.chevro.fr/streaks/cli/-/raw/main/docker-compose.yml
-wget https://git.chevro.fr/streaks/cli/-/raw/main/config.example.yml -O config.yml
-```
-
-Edit the `docker-compose.yml` to suit your needs, especially the **TZ** (for timezone) environment variable.
-
-```yml
-environment:
-  - TZ=Europe/Paris
-```
-
-You can find [a list of timezone here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), choose the one you use.
-
-**Go to the [Configuration](#configuration) section to edit your `config.yml` file, then come back here.**
-
-Start your container with:
-
-```bash
-docker-compose up -d
-```
-
-You can check that everything went well by looking at the container logs:
-
-```bash
-docker-compose logs
-```
-
-### Manual install
 
 Officially supported on Linux, may work on another platform.
 
-Install the following dependencies on your server:
+1. Install the following dependencies on your server:
 
 - Python v3 (with pip)
+- pipenv (`pip install pipenv`)
 
-Clone the repository:
+2. Clone the repository:
 
 ```bash
-git clone https://git.chevro.fr/streaks/cli.git streaks-cli && cd streaks-cli
+git clone https://git.chevro.fr/streaks/cli.git
 ```
 
-You can now install the cli dependencies:
+3. You can now install the cli dependencies:
 
 ```bash
 pipenv install
 ```
 
+4. Build the executable
+
+```bash
+pipenv run compile
+```
+
 **Go to the [Configuration](#configuration) section to edit your `config.yml` file, then come back here.**
+
+## Using the CLI
+
+### Calendars
+
+```bash
+# List available calendars
+./streaks calendars list
+# Add a new calendar
+./streask calendars add
+    [--name <name>] [--enable] [--disable]
+    [--disable-reminders] [--disable-congrats]
+    [--agenda <comma separated list of seven true/false values>]
+# Edit a calendar
+./streaks calendars edit <calendar_id>
+    [--name <name>] [--enable] [--disable]
+    [--disable-reminders] [--enable-reminders] 
+    [--disable-congrats] [--enable-congrats] 
+    [--agenda <comma separated list of seven true/false values>] 
+# Delete a calendar
+./streaks calendars delete <calendar_id>
+```
+
+### Progresses
+
+```bash
+# List available progresses
+./streaks progresses list
+# Add a new progress
+./streaks progresses add
+    [--name <name>] [--enable] [--disable]
+    [--goal <number>] [--unit <daily|weekly|monthly|yearly>]
+# Edit a progress
+./streaks progresses edit <progress_id>
+    [--name <name>] [--enable] [--disable]
+    [--goal <number>] [--unit <daily|weekly|monthly|yearly>]
+# Delete a progress
+./streaks progresses delete <progress_id>
+```
+
+### Runners
+
+```bash
+./streaks runners # Run all runners
+    [--service <service name>] # Run a specific runner
+    [--force] # When used with --service, run the specified service even if it is disabled.
+    [--reset] # Reset service(s) data (remove everything)
+    [--start <ISO date>] # Will run the service for every day from the specified date to today
+```
 
 ## Configuration
 
-⚠️ Some daemons ask you for your credentials to third party services. In these cases you need to be very careful with your `config.yml` file. ⚠️
+⚠️ Some services may ask you for your credentials to third party services. In these cases you need to be very careful with your `config.yml` file. ⚠️
 
 ----
 
@@ -87,7 +99,6 @@ The minimal `config.yml` file should look like this:
 ```yml
 instance: "https://streaks.chevro.fr"
 api_key: "your_api_key"
-cron: "50 * * * *"
 services:
   <The services configuration (detailed below)>
 ```
@@ -100,24 +111,29 @@ This is the address of the Streaks instance you are using.
 
 This is your Streaks API key, these are generated from the Streaks application and allow the runner to mark your successes.
 
-### **cron**
-
-The cron syntax is used to know when the runner should go and make requests to the third party service to know if you have done your habit. The default cron is "50 ****", which means every hour, at minute 50.
-You can view your cron on the website [https://crontab.guru](https://crontab.guru/#50_*_*_*_*)
-
 ### **services**
+
+**This is an optionnal section that you need to configure only if you want to use the runners (fetch a day status from a third-party service)**
 
 The services section includes the configuration of each third party service you will use. The syntax will look like :
 
 ```yml
 services:
-  duolingo:
-    enable: true
-    calendar: "your_calendar_id"
-    username: "your_duolingo_login"
-    password: "you_duolingo_password"
-  <other service>:
-    <other fields>: <value>
+- type: duolingo
+  name: "🦜 Duolingo"
+  enable: true
+  goal: 15xp
+  calendars:
+  - '63c028aa405c3470bac95040'
 ```
 
-But each service requires a different configuration and is listed in the [Supported services](#supported-services) section.
+But each service requires a different configuration, here is a list of the built-in services
+
+## Built-in services
+
+Here is a list of supported services, each service has its own README which contains its configuration instructions for the `config.yml` file.
+
+- [Duolingo](src/services/duolingo/)
+- [Strava](src/services/strava/)
+- [Gitlab](src/services/gitlab/)
+- [Brilliant](src/services/brilliant/)
