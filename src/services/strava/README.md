@@ -1,3 +1,5 @@
 # Strava
 
 ## Configuration
+
+Oauth2
