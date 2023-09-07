@@ -1,5 +1,0 @@
-# GitLab
-
-## Credentials
-
-## Token

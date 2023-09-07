@@ -1,5 +1,0 @@
-# Strava
-
-## Configuration
-
-Oauth2
