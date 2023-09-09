@@ -43,13 +43,18 @@ Whether the service is enabled or not. It must be `true` or `false`.
 
 The visibility of the projects to consider.
 
-*TODO: add the list of possible values.*
+Possible values are:
+- `public`
+- *TODO: add the list of possible values.*
 
 ### **actions**
 
 A list of actions that will trigger the streak expansion.
 
-*TODO: add the list of possible values.*
+Possible values are:
+- `All`
+- `pushed_to`
+- *TODO: add the list of possible values.*
 
 ### **calendars**
 
