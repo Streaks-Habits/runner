@@ -54,9 +54,9 @@ pipenv run compile
 # Edit a calendar
 ./streaks calendars edit <calendar_id>
     [--name <name>] [--enable] [--disable]
-    [--disable-reminders] [--enable-reminders] 
-    [--disable-congrats] [--enable-congrats] 
-    [--agenda <comma separated list of seven true/false values>] 
+    [--disable-reminders] [--enable-reminders]
+    [--disable-congrats] [--enable-congrats]
+    [--agenda <comma separated list of seven true/false values>]
 # Delete a calendar
 ./streaks calendars delete <calendar_id>
 ```
@@ -133,7 +133,7 @@ But each service requires a different configuration, here is a list of the built
 
 Here is a list of supported services, each service has its own README which contains its configuration instructions for the `config.yml` file.
 
-- [Duolingo](src/services/duolingo/)
-- [Strava](src/services/strava/)
-- [Gitlab](src/services/gitlab/)
-- [Brilliant](src/services/brilliant/)
+- [Duolingo](src/services/duolingo/) Expand your streak if you have reached your daily goal on Duolingo.
+- [Strava](src/services/strava/) Expand your streak if you have made an activity on Strava.
+- [Gitlab](src/services/gitlab/) Expand your streak if you have committed at least once today.
+- [Brilliant](src/services/brilliant/) Expand your streak if you have completed a daily challenge on Brilliant.
