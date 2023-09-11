@@ -69,3 +69,6 @@ def refresh_and_get_access_token():
     dotenv.set_key(dotenv_file, "STRAVA_ACCESS_TOKEN", access_token)
     dotenv.set_key(dotenv_file, "STRAVA_REFRESH_TOKEN", refresh_token)
     return access_token
+
+if __name__ == "__main__":
+	refresh_and_get_access_token()
